@@ -59,7 +59,7 @@ class ServerConnection {
         const protocol = location.protocol.startsWith('https') ? 'wss' : 'ws';
         const webrtc = window.isRtcSupported ? '/webrtc' : '/fallback';
         // const url = protocol + '://' + location.host + location.pathname + 'server' + webrtc;
-        const url = protocol + '://' + `server.yiersan.link/` + 'server' + webrtc;
+        const url = protocol + '://' + `sfs.yiersan.link/` + 'server' + webrtc;
         // const url = 'ws' + '://' + `localhost:3000/` + 'server' + webrtc;
         return url;
     }

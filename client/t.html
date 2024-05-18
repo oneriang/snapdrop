@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Chat Demo</title>
+  <style>
+    #voice-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #voice-list li {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+    }
+    #voice-list li:last-child {
+      border-bottom: none;
+    }
+    #voice-list li button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <button id="start-recording-btn">Start Recording</button>
+  <ul id="voice-list"></ul>
+  
+  <script>
+    const dbName = 'my-audio-db';
+    const storeName = 'audio-files';
+    
+    // 打开 IndexedDB 数据库
+    const request = indexedDB.open(dbName, 1);
+    
+    // 创建 objectStore
+    request.onupgradeneeded = function(event) {
+      const db = event.target.result;
+      const store = db.createObjectStore(storeName, { keyPath: 'name' });
+    };
+    
+    // 保存音频文件
+    function saveAudioFile1(name, audioBlob) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const audioFile = { name: name, data: audioBlob };
+        const putRequest = store.put(audioFile);
+        putRequest.onsuccess = function() {
+          console.log('Audio file saved successfully.');
+        };
+      };
+    }
+
+function saveAudioFile(name, audioBlob) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const audioFile = { name: name, data: audioBlob };
+    const putRequest = store.put(audioFile);
+    putRequest.onsuccess = function() {
+    alert('Audio file saved successfully.');
+      console.log('Audio file saved successfully.');
+    };
+  };
+}
+
+    
+    // 加载音频文件
+    function loadAudioFile1(name) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const getRequest = store.get(name);
+        getRequest.onsuccess = function() {
+          const audioFile = getRequest.result;
+          if (audioFile) {
+            const audioUrl = URL.createObjectURL(audioFile.data);
+            const audioPlayer = document.getElementById('audio-player');
+            audioPlayer.src = audioUrl;
+            audioPlayer.load();
+            audioPlayer.play();
+          }
+        };
+      };
+    }
+
+function loadAllAudioFiles() {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const cursorRequest = store.openCursor();
+    cursorRequest.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        const audioFile = cursor.value;
+        const audioUrl = URL.createObjectURL(audioFile.data);
+        const voiceLi = document.createElement('li');
+        const voiceAudio = document.createElement('audio');
+        const voiceDelete = document.createElement('button');
+        voiceAudio.src = audioUrl;
+        voiceAudio.controls = true;
+        voiceDelete.textContent = 'Delete';
+        voiceDelete.addEventListener('click', () => {
+          voiceList.removeChild(voiceLi);
+          URL.revokeObjectURL(audioUrl);
+          deleteAudioFile(audioFile.name);
+        });
+        voiceLi.appendChild(voiceAudio);
+        voiceLi.appendChild(voiceDelete);
+        voiceList.appendChild(voiceLi);
+        cursor.continue();
+      }
+    };
+  };
+}
+
+
+  </script>
+  <script>
+    const startRecordingBtn = document.getElementById('start-recording-btn');
+    const voiceList = document.getElementById('voice-list');
+
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    startRecordingBtn.addEventListener('click', () => {
+      if (!mediaRecorder) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    function startRecording() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+          startRecordingBtn.textContent = 'Stop Recording';
+          mediaRecorder.addEventListener('dataavailable', event => {
+            recordedChunks.push(event.data);
+          });
+        })
+        .catch(error => {
+          console.error('Error accessing media devices.', error);
+        });
+    }
+
+    function stopRecording1() {
+      mediaRecorder.stop();
+      startRecordingBtn.textContent = 'Start Recording';
+      mediaRecorder = null;
+      const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+      recordedChunks = [];
+      // 在这里处理录音文件
+      addVoiceToList(recordedBlob);
+    }
+    
+function stopRecording() {
+  mediaRecorder.stop();
+  startRecordingBtn.textContent = 'Start Recording';
+  mediaRecorder = null;
+  const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+  recordedChunks = [];
+  // Save the recorded audio to IndexedDB
+  const timestamp = new Date().toISOString();
+  saveAudioFile(timestamp, recordedBlob);
+  // Add the voice to the list
+  addVoiceToList(recordedBlob, timestamp);
+}
+
+
+    function addVoiceToList1(voiceBlob) {
+      const voiceUrl = URL.createObjectURL(voiceBlob);
+      const voiceLi = document.createElement('li');
+      const voiceAudio = document.createElement('audio');
+      const voiceDelete = document.createElement('button');
+      voiceAudio.src = voiceUrl;
+      voiceAudio.controls = true;
+      voiceDelete.textContent = 'Delete';
+      voiceDelete.addEventListener('click', () => {
+        voiceList.removeChild(voiceLi);
+        URL.revokeObjectURL(voiceUrl);
+      });
+      voiceLi.appendChild(voiceAudio);
+      voiceLi.appendChild(voiceDelete);
+      voiceList.appendChild(voiceLi);
+    }
+function addVoiceToList2(voiceBlob, name) {
+  const voiceUrl = URL.createObjectURL(voiceBlob);
+  const voiceLi = document.createElement('li');
+  const voiceAudio = document.createElement('audio');
+  const voiceDelete = document.createElement('button');
+  voiceAudio.src = voiceUrl;
+  voiceAudio.controls = true;
+  voiceDelete.textContent = 'Delete';
+  voiceDelete.addEventListener('click', () => {
+    voiceList.removeChild(voiceLi);
+    URL.revokeObjectURL(voiceUrl);
+    // Delete the audio file from IndexedDB
+    deleteAudioFile(name);
+  });
+  voiceLi.appendChild(voiceAudio);
+  voiceLi.appendChild(voiceDelete);
+  voiceList.appendChild(voiceLi);
+}
+
+function addVoiceToList(voiceBlob, name) {
+  const voiceUrl = URL.createObjectURL(voiceBlob);
+  const voiceLi = document.createElement('li');
+  const voiceAudio = document.createElement('audio');
+  const voiceDelete = document.createElement('button');
+  voiceAudio.src = voiceUrl;
+  voiceAudio.controls = true;
+  voiceDelete.textContent = 'Delete';
+  voiceDelete.addEventListener('click', () => {
+    voiceList.removeChild(voiceLi);
+    URL.revokeObjectURL(voiceUrl);
+    deleteAudioFile(name);
+  });
+  voiceLi.appendChild(voiceAudio);
+  voiceLi.appendChild(voiceDelete);
+  voiceList.appendChild(voiceLi);
+}
+
+
+function deleteAudioFile(name) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const deleteRequest = store.delete(name);
+    deleteRequest.onsuccess = function() {
+      console.log('Audio file deleted successfully.');
+    };
+  };
+}
+
+function loadAndPlayAudioFile(name) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const getRequest = store.get(name);
+    getRequest.onsuccess = function() {
+      const audioFile = getRequest.result;
+      if (audioFile) {
+        const audioUrl = URL.createObjectURL(audioFile.data);
+        const audioPlayer = document.createElement('audio');
+        audioPlayer.src = audioUrl;
+        audioPlayer.controls = true;
+        audioPlayer.autoplay = true;
+        voiceList.appendChild(audioPlayer);
+      }
+    };
+  };
+}
+
+
+window.addEventListener('load', () => {
+  loadAllAudioFiles();
+});
+
+  </script>
+</body>
+</html>

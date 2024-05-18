@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Chat Demo</title>
+  <style>
+    #voice-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #voice-list li {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    #voice-list li:last-child {
+      border-bottom: none;
+    }
+
+    #voice-list li button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+
+    #voice-list li audio {
+      margin-right: 10px;
+    }
+
+    #voice-list li span {
+      margin-right: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button id="start-recording-btn">Start Recording</button>
+    <label for="audio-format">Audio Format:</label>
+    <select id="audio-format">
+      <option value="audio/wav">WAV</option>
+      <option value="audio/ogg">Ogg Vorbis</option>
+      <option value="audio/mp3">MP3</option>
+    </select>
+  </div>
+  <ul id="voice-list"></ul>
+
+  <script>
+    const dbName = 'my-audio-db';
+    const storeName = 'audio-files';
+
+    // 打开 IndexedDB 数据库
+    const request = indexedDB.open(dbName, 1);
+
+    // 创建 objectStore
+    request.onupgradeneeded = function(event) {
+      const db = event.target.result;
+      const store = db.createObjectStore(storeName, { keyPath: 'name' });
+    };
+
+    // 保存音频文件
+    function saveAudioFile(name, audioBlob) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const audioFile = { name: name, data: audioBlob };
+        const putRequest = store.put(audioFile);
+        putRequest.onsuccess = function() {
+          console.log('Audio file saved successfully.');
+        };
+      };
+    }
+
+    // 加载音频文件
+    function loadAudioFiles() {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const getRequest = store.getAll();
+        getRequest.onsuccess = function() {
+          const audioFiles = getRequest.result;
+          audioFiles.forEach(audioFile => {
+            const audioUrl = URL.createObjectURL(audioFile.data);
+            addVoiceToList(audioFile.name, audioUrl, audioFile.data);
+          });
+        };
+      };
+    }
+  </script>
+
+  <script>
+    const startRecordingBtn = document.getElementById('start-recording-btn');
+    const voiceList = document.getElementById('voice-list');
+    const audioFormatSelect = document.getElementById('audio-format');
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    startRecordingBtn.addEventListener('click', () => {
+      if (!mediaRecorder) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    function startRecording() {
+      const audioFormat = audioFormatSelect.value;
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          //mediaRecorder = new MediaRecorder(stream, { mimeType: audioFormat });
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+          startRecordingBtn.textContent = 'Stop Recording';
+          mediaRecorder.addEventListener('dataavailable', event => {
+            recordedChunks.push(event.data);
+          });
+        })
+        .catch(error => {
+          console.error('Error accessing media devices.', error);
+          alert('Error: Unable to access microphone. Please grant permission and try again.');
+        });
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      startRecordingBtn.textContent = 'Start Recording';
+      mediaRecorder = null;
+      const recordedBlob = new Blob(recordedChunks, { type: audioFormatSelect.value });
+      recordedChunks = [];
+      const fileName = `recording-${Date.now()}.${audioFormatSelect.value.split('/')[1]}`;
+      saveAudioFile(fileName, recordedBlob);
+      addVoiceToList(fileName, URL.createObjectURL(recordedBlob), recordedBlob);
+    }
+
+    function addVoiceToList(fileName, voiceUrl, voiceBlob) {
+      const voiceLi = document.createElement('li');
+      const voiceAudio = document.createElement('audio');
+      const voiceDuration = document.createElement('span');
+      const voiceDelete = document.createElement('button');
+
+      voiceAudio.src = voiceUrl;
+      voiceAudio.controls = true;
+      voiceAudio.addEventListener('loadedmetadata', () => {
+        const duration = voiceAudio.duration.toFixed(2);
+        voiceDuration.textContent = `Duration: ${duration} seconds`;
+      });
+
+      voiceDelete.textContent = 'Delete';
+      voiceDelete.addEventListener('click', () => {
+        voiceList.removeChild(voiceLi);
+        URL.revokeObjectURL(voiceUrl);
+        deleteAudioFile(fileName);
+      });
+
+      voiceLi.appendChild(voiceAudio);
+      voiceLi.appendChild(voiceDuration);
+      voiceLi.appendChild(voiceDelete);
+      voiceList.appendChild(voiceLi);
+    }
+
+    function deleteAudioFile(name) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const deleteRequest = store.delete(name);
+        deleteRequest.onsuccess = function() {
+          console.log(`Audio file ${name} deleted successfully.`);
+        };
+      };
+    }
+
+    // 加载之前保存的录音文件
+    loadAudioFiles();
+  </script>
+</body>
+</html>

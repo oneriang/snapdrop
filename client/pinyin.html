@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>拼音学习应用程序</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    .pinyin {
+      font-size: 88px;
+      font-weight: bold;
+    }
+    button {
+      margin: 5px;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>拼音学习应用程序</h1>
+  <p>点击下面的拼音发音:</p>
+  <div id="pinyinDisplay" class="pinyin"></div>
+
+  <!-- 声母 -->
+  <h2>声母</h2>
+  <button onclick="playPinyin('b')">b</button>
+  <button onclick="playPinyin('p')">p</button>
+  <button onclick="playPinyin('m')">m</button>
+  <button onclick="playPinyin('f')">f</button>
+  <button onclick="playPinyin('d')">d</button>
+  <button onclick="playPinyin('t')">t</button>
+  <button onclick="playPinyin('n')">n</button>
+  <button onclick="playPinyin('l')">l</button>
+  <button onclick="playPinyin('g')">g</button>
+  <button onclick="playPinyin('k')">k</button>
+  <button onclick="playPinyin('h')">h</button>
+  <button onclick="playPinyin('j')">j</button>
+  <button onclick="playPinyin('q')">q</button>
+  <button onclick="playPinyin('x')">x</button>
+  <button onclick="playPinyin('zh')">zh</button>
+  <button onclick="playPinyin('ch')">ch</button>
+  <button onclick="playPinyin('sh')">sh</button>
+  <button onclick="playPinyin('r')">r</button>
+  <button onclick="playPinyin('z')">z</button>
+  <button onclick="playPinyin('c')">c</button>
+  <button onclick="playPinyin('s')">s</button>
+
+  <!-- 韵母 -->
+  <h2>韵母</h2>
+  <button onclick="playPinyin('a')">a</button>
+  <button onclick="playPinyin('o')">o</button>
+  <button onclick="playPinyin('e')">e</button>
+  <button onclick="playPinyin('ai')">ai</button>
+  <button onclick="playPinyin('ei')">ei</button>
+  <button onclick="playPinyin('ao')">ao</button>
+  <button onclick="playPinyin('ou')">ou</button>
+  <button onclick="playPinyin('an')">an</button>
+  <button onclick="playPinyin('en')">en</button>
+  <button onclick="playPinyin('ang')">ang</button>
+  <button onclick="playPinyin('eng')">eng</button>
+  <button onclick="playPinyin('er')">er</button>
+  <button onclick="playPinyin('yi')">yi</button>
+  <button onclick="playPinyin('wu')">wu</button>
+  <button onclick="playPinyin('yu')">yu</button>
+  <button onclick="playPinyin('ye')">ye</button>
+  <button onclick="playPinyin('yao')">yao</button>
+  <button onclick="playPinyin('you')">you</button>
+  <button onclick="playPinyin('yan')">yan</button>
+  <button onclick="playPinyin('yin')">yin</button>
+  <button onclick="playPinyin('yang')">yang</button>
+  <button onclick="playPinyin('ying')">ying</button>
+  <button onclick="playPinyin('yong')">yong</button>
+
+  <!-- 声调 -->
+  <h2>声调</h2>
+  <button onclick="playPinyin('ā')">ā</button>
+  <button onclick="playPinyin('á')">á</button>
+  <button onclick="playPinyin('ǎ')">ǎ</button>
+  <button onclick="playPinyin('à')">à</button>
+
+  <script>
+    const pinyinAudio = {
+      // 声母
+      'b': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/5/54/Zh-ca_b.ogg/Zh-ca_b.ogg.mp3'),
+      'p': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b7/Zh-ca_p.ogg/Zh-ca_p.ogg.mp3'),
+      'm': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/41/Zh-ca_m.ogg/Zh-ca_m.ogg.mp3'),
+      'f': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/7/79/Zh-ca_f.ogg/Zh-ca_f.ogg.mp3'),
+      'd': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/3/33/Zh-ca_d.ogg/Zh-ca_d.ogg.mp3'),
+      't': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/d/dc/Zh-ca_t.ogg/Zh-ca_t.ogg.mp3'),
+      'n': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/6/69/Zh-ca_n.ogg/Zh-ca_n.ogg.mp3'),
+      'l': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/3/34/Zh-ca_l.ogg/Zh-ca_l.ogg.mp3'),
+      'g': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/5/59/Zh-ca_g.ogg/Zh-ca_g.ogg.mp3'),
+      'k': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/Zh-ca_k.ogg/Zh-ca_k.ogg.mp3'),
+      'h': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/9/92/Zh-ca_h.ogg/Zh-ca_h.ogg.mp3'),
+      'j': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/2/25/Zh-ca_j.ogg/Zh-ca_j.ogg.mp3'),
+      'q': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e0/Zh-ca_q.ogg/Zh-ca_q.ogg.mp3'),
+      'x': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/5/55/Zh-ca_x.ogg/Zh-ca_x.ogg.mp3'),
+      'zh': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/2/28/Zh-ca_zh.ogg/Zh-ca_zh.ogg.mp3'),
+      'ch': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/0/09/Zh-ca_ch.ogg/Zh-ca_ch.ogg.mp3'),
+      'sh': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/48/Zh-ca_sh.ogg/Zh-ca_sh.ogg.mp3'),
+      'r': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/3/39/Zh-ca_r.ogg/Zh-ca_r.ogg.mp3'),
+      'z': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/7/76/Zh-ca_z.ogg/Zh-ca_z.ogg.mp3'),
+      'c': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f1/Zh-ca_c.ogg/Zh-ca_c.ogg.mp3'),
+      's': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e9/Zh-ca_s.ogg/Zh-ca_s.ogg.mp3'),
+
+      // 韵母
+      'a': new Audio('pinyin/a1.mp3'),
+      'o': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/3/31/Zh-ca_o.ogg/Zh-ca_o.ogg.mp3'),
+      'e': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/d/db/Zh-ca_e.ogg/Zh-ca_e.ogg.mp3'),
+      'ai': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/8/8e/Zh-ca_ai.ogg/Zh-ca_ai.ogg.mp3'),
+      'ei': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/d/dc/Zh-ca_ei.ogg/Zh-ca_ei.ogg.mp3'),
+      'ao': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/48/Zh-ca_ao.ogg/Zh-ca_ao.ogg.mp3'),
+      'ou': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/2/25/Zh-ca_ou.ogg/Zh-ca_ou.ogg.mp3'),
+      'an': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/d/da/Zh-ca_an.ogg/Zh-ca_an.ogg.mp3'),
+      'en': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/7/72/Zh-ca_en.ogg/Zh-ca_en.ogg.mp3'),
+      'ang': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/1/1d/Zh-ca_ang.ogg/Zh-ca_ang.ogg.mp3'),
+      'eng': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/41/Zh-ca_eng.ogg/Zh-ca_eng.ogg.mp3'),
+      'er': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/0/02/Zh-ca_er.ogg/Zh-ca_er.ogg.mp3'),
+      'yi': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/0/03/Zh-ca_yi.ogg/Zh-ca_yi.ogg.mp3'),
+      'wu': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c1/Zh-ca_wu.ogg/Zh-ca_wu.ogg.mp3'),
+      'yu': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/8/8d/Zh-ca_yu.ogg/Zh-ca_yu.ogg.mp3'),
+      'ye': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b9/Zh-ca_ye.ogg/Zh-ca_ye.ogg.mp3'),
+      'yao': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/5/50/Zh-ca_yao.ogg/Zh-ca_yao.ogg.mp3'),
+      'you': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c2/Zh-ca_you.ogg/Zh-ca_you.ogg.mp3'),
+      'yan': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/b/ba/Zh-ca_yan.ogg/Zh-ca_yan.ogg.mp3'),
+      'yin': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/f/fe/Zh-ca_yin.ogg/Zh-ca_yin.ogg.mp3'),
+      'yang': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/e/ec/Zh-ca_yang.ogg/Zh-ca_yang.ogg.mp3'),
+      'ying': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4e/Zh-ca_ying.ogg/Zh-ca_ying.ogg.mp3'),
+      'yong': new Audio('https://upload.wikimedia.org/wikipedia/commons/transcoded/5/5b/Zh-ca_yong.ogg/Zh-ca_yong.ogg.mp3'),
+
+      // 声调
+      'ā': new Audio('pinyin/a1.mp3'),
+      'á': new Audio('pinyin/a2.mp3'),
+      'ǎ': new Audio('pinyin/a3.mp3'),
+      'à': new Audio('pinyin/a4.mp3'),
+    };
+
+    function playPinyin(pinyin) {
+      const pinyinDisplay = document.getElementById('pinyinDisplay');
+      pinyinDisplay.textContent = pinyin;
+      pinyinAudio[pinyin].play();
+    }
+  </script>
+</body>
+</html>

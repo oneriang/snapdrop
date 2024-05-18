@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>实时地理位置记录</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+            document.getElementById("location").innerHTML += 
+            "Latitude: " + lat + " : " + "Longitude: " + lon + "<br/>";
+            // 将数据发送到服务器
+            //sendDataToServer(lat, lon);
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        function sendDataToServer(lat, lon) {
+            fetch('/saveLocation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: lat,
+                    longitude: lon
+                })
+            }).then(response => response.json())
+              .then(data => console.log('Success:', data))
+              .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body onload="getLocation()">
+    <h1>实时地理位置记录</h1>
+    <p id="location">定位中...</p>
+</body>
+</html>

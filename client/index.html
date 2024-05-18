@@ -211,14 +211,61 @@
          <rect fill="none" height="24" width="24"/><path d="M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98,1.37-2.58,2.26-4.4,2.26 c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"/>
         </symbol>
     </svg>
+    
+    <div style="display:none1">
+        <!-- <button id="start-btn">Start Recording</button>
+        <button id="stop-btn" disabled>Stop Recording</button>
+        <audio id="player" controls></audio> -->
+    </div>
+  
+<script>
+        
+    // const startBtn = document.getElementById('start-btn');
+    // const stopBtn = document.getElementById('stop-btn');
+    // const player = document.getElementById('player');
+    
+    // let mediaRecorder;
+    // let recordedChunks = [];
+    
+    // startBtn.addEventListener('click', () => {
+    //   navigator.mediaDevices.getUserMedia({ audio: true })
+    //     .then(stream => {
+    //       mediaRecorder = new MediaRecorder(stream);
+    //       mediaRecorder.start();
+    //       startBtn.disabled = true;
+    //       stopBtn.disabled = false;
+    
+    //       mediaRecorder.addEventListener('dataavailable', event => {
+    //         recordedChunks.push(event.data);
+    //       });
+    //     })
+    //     .catch(error => {
+    //       console.error('Error accessing media devices.', error);
+    //     });
+    // });
+    
+    // stopBtn.addEventListener('click', () => {
+    //   mediaRecorder.stop();
+    //   startBtn.disabled = false;
+    //   stopBtn.disabled = true;
+    
+    //   mediaRecorder.addEventListener('stop', () => {
+    //     const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+    //     recordedChunks = [];
+    //     player.src = URL.createObjectURL(recordedBlob);
+    //   });
+    // });
+
+</script>
+    
     <!-- Scripts -->
     <script src="scripts/network.js"></script>
-    <script src="scripts/ui.js"></script>
+    <script src="scripts/ui.js?v=1"></script>
     <script src="scripts/theme.js" async></script>
     <script src="scripts/clipboard.js" async></script>
     <!-- Sounds -->
     <audio id="blop" autobuffer="true">
-        <source src="/sounds/blop.mp3" type="audio/mpeg">
+        <source src="/sounds/blop.mp3" type="audio/mpeg">?
         <source src="/sounds/blop.ogg" type="audio/ogg">
     </audio>
     <!-- no script -->

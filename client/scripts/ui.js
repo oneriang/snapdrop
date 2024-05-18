@@ -75,7 +75,6 @@ class PeerUI {
     html() {
         return `
             <label class="column center" title="Click to send files or right click to send a text">
-                <input type="file" multiple>
                 <x-icon shadow="1">
                     <svg class="icon"><use xlink:href="#"/></svg>
                 </x-icon>
@@ -86,6 +85,14 @@ class PeerUI {
                 <div class="name font-subheading"></div>
                 <div class="device-name font-body2"></div>
                 <div class="status font-body2"></div>
+                <div id="recorder-time">00:00</div>
+                <div>
+                    <button id="start-btn-none" style="display:none" >Start Recording</button>
+                    <button id="start-btn" style="display:none" >Start Recording</button>
+                    <button id="stop-btn" style="display:none" >Stop Recording</button>
+                    <audio id="player" controls style="display:none" ></audio>
+                    <input type="file" multiple style="display:none;">
+                </div>
             </label>`
     }
 
@@ -105,6 +112,131 @@ class PeerUI {
         el.querySelector('.device-name').textContent = this._deviceName();
         this.$el = el;
         this.$progress = el.querySelector('.progress');
+
+        console.log(1);
+        const startBtn = el.querySelector('#start-btn');
+        const stopBtn = el.querySelector('#stop-btn');
+        const player = el.querySelector('#player');
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        const recorderTime = el.querySelector('#recorder-time');
+        
+        let startTime;
+    
+        startBtn.addEventListener('click', () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                if (!mediaRecorder) {
+                    mediaRecorder = new MediaRecorder(stream);
+                }
+                
+                if (mediaRecorder.state == "recording")
+                {
+
+                    
+                    mediaRecorder.addEventListener('stop', () => {
+                        const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+                        recordedChunks = [];
+                        //player.src = URL.createObjectURL(recordedBlob);
+                        
+                        // 将录音文件发送给对方
+                        const fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.style.display = 'none';
+        
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(new File([recordedBlob], 'recorded-audio.mp3', { type: 'audio/mp3' }));
+                        fileInput.files = dataTransfer.files;
+        
+                        Events.fire('files-selected', {
+                            files: fileInput.files,
+                            to: this._peer.id
+                        });
+                        fileInput.value = null; // reset input
+
+                        mediaRecorder = null;
+                    });
+
+                    mediaRecorder.stop();
+                    // startBtn.disabled = false;
+                    // stopBtn.disabled = true;
+
+                    updateRecorderTime();
+                 
+                    el.querySelector('x-icon').classList.remove('recording');
+                }
+                else
+                {
+                    mediaRecorder.start();
+                    // startBtn.disabled = true;
+                    // stopBtn.disabled = false;
+
+                    el.querySelector('x-icon').classList.add('recording');
+
+                                
+                    startTime = Date.now();
+                    updateRecorderTime();
+
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        recordedChunks.push(event.data);
+                    });
+                }
+
+            })
+            .catch(error => {
+                alert(error)
+            console.error('Error accessing media devices.', error);
+            });
+        });
+    
+        function updateRecorderTime() {
+
+            if (mediaRecorder.state == "recording"){
+                const currentTime = Date.now();
+                const elapsedTime = currentTime - startTime;
+                const minutes = Math.floor(elapsedTime / 60000);
+                const seconds = Math.floor((elapsedTime % 60000) / 1000);
+                recorderTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                requestAnimationFrame(updateRecorderTime);
+            }
+            
+          }
+
+        console.log(4)
+        
+        // stopBtn.addEventListener('click', () => {
+        //     mediaRecorder.stop();
+        //     // startBtn.disabled = false;
+        //     // stopBtn.disabled = true;
+            
+        //     mediaRecorder.addEventListener('stop', () => {
+        //         const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+        //         recordedChunks = [];
+        //         //player.src = URL.createObjectURL(recordedBlob);
+                
+        //         // 将录音文件发送给对方
+        //         const fileInput = document.createElement('input');
+        //         fileInput.type = 'file';
+        //         fileInput.style.display = 'none';
+
+        //         const dataTransfer = new DataTransfer();
+        //         dataTransfer.items.add(new File([recordedBlob], 'recorded-audio.mp3', { type: 'audio/mp3' }));
+        //         fileInput.files = dataTransfer.files;
+
+        //         Events.fire('files-selected', {
+        //             files: fileInput.files,
+        //             to: this._peer.id
+        //         });
+        //         fileInput.value = null; // reset input
+        //     });
+        // });
+
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            startBtn.click();
+        });
+
     }
 
     _bindListeners(el) {
@@ -187,7 +319,8 @@ class PeerUI {
 
     _onRightClick(e) {
         e.preventDefault();
-        Events.fire('text-recipient', this._peer.id);
+        //Events.fire('text-recipient', this._peer.id);
+        this._inputClick();
     }
 
     _onTouchStart(e) {
@@ -198,10 +331,17 @@ class PeerUI {
     _onTouchEnd(e) {
         if (Date.now() - this._touchStart < 500) {
             clearTimeout(this._touchTimer);
+            el.querySelector('#start-btn').click();
         } else { // this was a long tap
             if (e) e.preventDefault();
-            Events.fire('text-recipient', this._peer.id);
+            //alert(1)
+            //Events.fire('text-recipient', this._peer.id);
+            this._inputClick();
         }
+    }
+    
+    _inputClick() {
+        this.$el.querySelector('input').click();
     }
 }
 
@@ -257,6 +397,11 @@ class ReceiveDialog extends Dialog {
     }
 
     _displayFile(file) {
+        console.log('_displayFile');
+        console.log(file);
+
+        player.src = URL.createObjectURL(file.blob);
+
         const $a = this.$el.querySelector('#download');
         const url = URL.createObjectURL(file.blob);
         $a.href = url;

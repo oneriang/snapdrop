@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+   <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- Web App Config -->
+    <title>Snapdrop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+      <link rel="stylesheet" href="mvp.css?6">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <title>Voice Chat Demo</title>
+  <style>
+    #voice-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #voice-list li {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+    }
+    #voice-list li:last-child {
+      border-bottom: none;
+    }
+    #voice-list li button {
+      
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    .responsive-image {
+      max-width: 100%;
+      height: auto;
+    }
+
+  </style>
+</head>
+<body>
+    <div id="map" style="height: 200px;"></div>
+
+    <button id="save-location-btn">Save Location</button>
+
+  <button id="start-recording-btn">Start Recording</button>
+<textarea id="text-input" rows="4" cols="50"></textarea>
+<button id="save-text-btn">Save Text</button>
+
+<input type="file" id="image-input" accept="image/*">
+<button id="save-image-btn">Save Image</button>
+
+
+<button id="capture-image-btn">Capture Image</button>
+<canvas id="hidden-canvas" style="display: none;"></canvas>
+<video id="camera-video" style="display: none;"></video>
+
+  
+  <ul id="voice-list"></ul>
+    <script>
+    
+    //alert(L);
+    
+    const map = L.map('map').setView([35.6876063, 139.71242], 13); // Set the center of the map and the zoom level
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
+}).addTo(map); // Add a tile layer from OpenStreetMap
+
+    function saveLocation() {
+        //alert(0);
+  navigator.geolocation.getCurrentPosition(position => {
+    const timestamp = new Date().toISOString();
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const location = {
+      name: timestamp,
+      data: {latitude: latitude,
+      longitude: longitude},
+      type: 'location',
+      timestamp: timestamp,
+      latitude: latitude,
+      longitude: longitude
+    };
+//alert(3);
+    const request = indexedDB.open(dbName);
+    request.onsuccess = function(event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const putRequest = store.put(location);
+
+      putRequest.onsuccess = function() {
+        console.log('Location saved successfully.');
+        //loadAllFiles();
+        //alert(1);
+        addLocationToList(location, timestamp);
+      };
+
+      putRequest.onerror = function(error) {
+          //alert(2);
+        console.error('Error saving location:', error);
+      };
+    };
+
+    request.onerror = function(error) {
+      console.error('Error opening IndexedDB:', error);
+    };
+  }, error => {
+    console.error('Error getting geolocation:', error);
+  });
+}
+
+function addLocationToList1(location,name) {
+  const locationLi = document.createElement('li');
+  const locationTime = document.createElement('span');
+  const locationLocation = document.createElement('span');
+  const locationDelete = document.createElement('button');
+
+  locationTime.textContent = new Date(location.timestamp).toLocaleString();
+  locationLocation.textContent = `Latitude: ${location.data.latitude}, Longitude: ${location.data.longitude}`;
+  locationDelete.textContent = 'Delete';
+
+  locationDelete.addEventListener('click', () => {
+    voiceList.removeChild(locationLi);
+    deleteLocation(name);
+  });
+
+  locationLi.appendChild(locationTime);
+  locationLi.appendChild(locationLocation);
+  locationLi.appendChild(locationDelete);
+  voiceList.appendChild(locationLi);
+}
+
+
+function addLocationToList(location,name) {
+  const locationLi = document.createElement('li');
+  const locationTime = document.createElement('span');
+  const locationLocation = document.createElement('span');
+  const locationDelete = document.createElement('button');
+
+  locationTime.textContent = new Date(location.timestamp).toLocaleString();
+  locationLocation.textContent = `Latitude: ${location.data.latitude}, Longitude: ${location.data.longitude}`;
+  locationDelete.textContent = 'Delete';
+
+  locationDelete.addEventListener('click', () => {
+    locationList.removeChild(locationLi);
+    deleteLocation(location.name);
+    map.removeLayer(location.marker); // Remove the marker from the map
+  });
+
+  locationLi.appendChild(locationTime);
+  locationLi.appendChild(locationLocation);
+  locationLi.appendChild(locationDelete);
+  voiceList.appendChild(locationLi);
+//alert(11);
+  const marker = L.marker([location.data.latitude, location.data.longitude]).addTo(map); // Add a marker to the map
+  location.marker = marker; // Save a reference to the marker
+  //alert(112);
+}
+
+
+
+function loadAllFiles() {
+  const transaction = db.transaction(storeName, 'readonly');
+  const store = transaction.objectStore(storeName);
+  const request = store.openCursor();
+
+  voiceList.innerHTML = '';
+  locationList.innerHTML = '';
+
+  request.onsuccess = function(event) {
+    const cursor = event.target.result;
+
+    if (cursor) {
+      if (cursor.value.type === 'audio') {
+        addVoiceToList(cursor.value.data, cursor.value.name);
+      } else if (cursor.value.type === 'text') {
+        addTextToList(cursor.value.data, cursor.value.name);
+      } else if (cursor.value.type === 'image') {
+        addImageToList(cursor.value.data, cursor.value.name);
+      } else if (cursor.value.type === 'video') {
+        addVideoToList(cursor.value.data, cursor.value.name);
+      } else if (cursor.value.type === 'location') {
+          //alert(7);
+        addLocationToList(cursor.value, cursor.value.name);
+      }
+
+      cursor.continue();
+    }
+  };
+}
+
+
+const saveLocationBtn = document.getElementById('save-location-btn');
+saveLocationBtn.addEventListener('click', saveLocation);
+
+   </script>
+ 
+    <script>
+        
+const captureImageBtn = document.getElementById('capture-image-btn');
+const hiddenCanvas = document.getElementById('hidden-canvas');
+const canvasContext = hiddenCanvas.getContext('2d');
+const cameraVideo = document.getElementById('camera-video');
+
+let cameraStream = null;
+
+captureImageBtn.addEventListener('click', async () => {
+  if (!cameraStream) {
+    // Request access to the camera
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      cameraVideo.srcObject = cameraStream;
+      cameraVideo.play();
+      cameraVideo.style.display = 'block';
+    } catch (error) {
+      console.error('Error accessing media devices:', error);
+    }
+  } else {
+    // Capture image and stop the camera
+    hiddenCanvas.width = cameraVideo.videoWidth;
+    hiddenCanvas.height = cameraVideo.videoHeight;
+    canvasContext.drawImage(cameraVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+    const imageContent = hiddenCanvas.toDataURL('image/jpeg');
+    const timestamp = new Date().toISOString();
+    saveImageContent(timestamp, imageContent, 'captured_image.jpg');
+    addImageToList(imageContent, timestamp, 'captured_image.jpg');
+
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+    cameraVideo.srcObject = null;
+    cameraVideo.style.display = 'none';
+  }
+});
+
+    </script>
+    <script>
+        
+        const saveImageBtn = document.getElementById('save-image-btn');
+const imageInput = document.getElementById('image-input');
+
+saveImageBtn.addEventListener('click', () => {
+  const file = imageInput.files[0];
+  if (!file) {
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const imageContent = reader.result;
+    const timestamp = new Date().toISOString();
+    saveImageContent(timestamp, imageContent, file.name);
+    addImageToList(imageContent, timestamp, file.name);
+  };
+  reader.readAsDataURL(file);
+  imageInput.value = ''; // Clear the input after saving
+});
+
+function saveImageContent(name, imageContent, fileName) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const imageContentObj = { name: name, data: imageContent, fileName: fileName };
+    const putRequest = store.put(imageContentObj);
+    putRequest.onsuccess = function() {
+      console.log('Image content saved successfully.');
+    };
+  };
+}
+
+
+function addImageToList1(imageContent, name, fileName) {
+  const imageLi = document.createElement('li');
+  const imageElement = document.createElement('img');
+  const imageDelete = document.createElement('button');
+  imageElement.src = imageContent;
+  imageDelete.textContent = 'Delete';
+  imageDelete.addEventListener('click', () => {
+    voiceList.removeChild(imageLi);
+    deleteImageContent(name);
+  });
+  imageLi.appendChild(imageElement);
+  imageLi.appendChild(imageDelete);
+  voiceList.appendChild(imageLi);
+}
+
+function addImageToList(imageContent, name, fileName) {
+  const imageLi = document.createElement('li');
+  const imageElement = document.createElement('img');
+  const imageDelete = document.createElement('button');
+  imageElement.src = imageContent;
+
+  // Add CSS class for responsive image
+  imageElement.classList.add('responsive-image');
+
+  imageDelete.textContent = 'Delete';
+  imageDelete.addEventListener('click', () => {
+    voiceList.removeChild(imageLi);
+    deleteImageContent(name);
+  });
+  imageLi.appendChild(imageElement);
+  imageLi.appendChild(imageDelete);
+  voiceList.appendChild(imageLi);
+}
+
+
+
+function deleteImageContent(name) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const deleteRequest = store.delete(name);
+    deleteRequest.onsuccess = function() {
+      console.log('Image content deleted successfully.');
+    };
+  };
+}
+
+function loadAllAudioFiles() {
+    
+    map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      map.removeLayer(layer); // Remove all existing markers from the map
+    }
+  });
+  
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const cursorRequest = store.openCursor();
+    cursorRequest.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        const storedItem = cursor.value;
+        if (storedItem.data instanceof Blob) {
+          // This is an audio file
+          addVoiceToList(storedItem.data, storedItem.name);
+        } else if (typeof storedItem.data === 'string' && storedItem.data.startsWith('data:image')) {
+          // This is an image
+          addImageToList(storedItem.data, storedItem.name, storedItem.fileName);
+        } else if (cursor.value.type === 'location') {
+            ////alert(7);
+        addLocationToList(storedItem, storedItem.name);
+      } else {
+          // This is a text content
+          addTextToList(storedItem.data, storedItem.name);
+        }
+        cursor.continue();
+      }
+    };
+  };
+}
+
+
+
+
+
+        
+        
+    </script>
+  
+  <script>
+      
+      const saveTextBtn = document.getElementById('save-text-btn');
+const textInput = document.getElementById('text-input');
+
+saveTextBtn.addEventListener('click', () => {
+  const textContent = textInput.value;
+  const timestamp = new Date().toISOString();
+  saveTextContent(timestamp, textContent);
+  addTextToList(textContent, timestamp);
+  textInput.value = ''; // Clear the input after saving
+});
+
+function saveTextContent(name, textContent) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const textContentObj = { name: name, data: textContent, timestamp: name };
+    const putRequest = store.put(textContentObj);
+    putRequest.onsuccess = function() {
+      console.log('Text content saved successfully.');
+    };
+  };
+}
+
+function deleteTextContent(name) {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const deleteRequest = store.delete(name);
+    deleteRequest.onsuccess = function() {
+      console.log('Text content deleted successfully.');
+    };
+  };
+}
+
+
+function addTextToList(textContent, name) {
+  const textLi = document.createElement('li');
+  const textDiv = document.createElement('div');
+  const textDelete = document.createElement('button');
+  const textTime = document.createElement('span');
+  textDiv.textContent = textContent;
+  textDelete.textContent = 'Delete';
+  textDelete.addEventListener('click', () => {
+    voiceList.removeChild(textLi);
+    deleteTextContent(name);
+  });
+  textTime.textContent = new Date(name).toLocaleString();
+  textLi.appendChild(textDiv);
+  textLi.appendChild(textDelete);
+  textLi.appendChild(textTime);
+  voiceList.appendChild(textLi);
+}
+
+
+function loadAllAudioFiles2() {
+  const request = indexedDB.open(dbName);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const cursorRequest = store.openCursor();
+    cursorRequest.onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        const storedItem = cursor.value;
+        if (storedItem.data instanceof Blob) {
+          // This is an audio file
+          addVoiceToList(storedItem.data, storedItem.name);
+        } else {
+          // This is a text content
+          addTextToList(storedItem.data, storedItem.name);
+        }
+        cursor.continue();
+      }
+    };
+  };
+}
+
+
+
+
+  </script>
+
+  <script>
+    const dbName = 'my-audio-db';
+    const storeName = 'audio-files';
+
+    // Open IndexedDB database
+    const request = indexedDB.open(dbName, 1);
+
+    // Create object store
+    request.onupgradeneeded = function(event) {
+      const db = event.target.result;
+      const store = db.createObjectStore(storeName, { keyPath: 'name' });
+    };
+
+    // Save audio file to IndexedDB
+    function saveAudioFile1(name, audioBlob) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const audioFile = { name: name, data: audioBlob };
+        const putRequest = store.put(audioFile);
+        putRequest.onsuccess = function() {
+          console.log('Audio file saved successfully.');
+        };
+      };
+    }
+    
+function saveAudioFile(name, audioBlob) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName);
+    request.onsuccess = function(event) {
+      const db = event.target.result;
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const audioFile = { name: name, data: audioBlob };
+      const putRequest = store.put(audioFile);
+      putRequest.onsuccess = function() {
+          //alert(1)
+        console.log('音频文件保存成功。');
+        resolve();
+      };
+      putRequest.onerror = function(error) {
+          //alert(2)
+        console.error('保存音频文件时出错：', error);
+        reject(error);
+      };
+    };
+    request.onerror = function(error) {
+      console.error('打开 IndexedDB 时出错：', error);
+      reject(error);
+    };
+  });
+}
+
+
+    // Load audio file from IndexedDB
+    function loadAudioFile(name) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const getRequest = store.get(name);
+        getRequest.onsuccess = function() {
+          const audioFile = getRequest.result;
+          if (audioFile) {
+            const audioUrl = URL.createObjectURL(audioFile.data);
+            const audioPlayer = document.getElementById('audio-player');
+            audioPlayer.src = audioUrl;
+            audioPlayer.load();
+            audioPlayer.play();
+          }
+        };
+      };
+    }
+
+    // Delete audio file from IndexedDB
+    function deleteAudioFile(name) {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const deleteRequest = store.delete(name);
+        deleteRequest.onsuccess = function() {
+          console.log('Audio file deleted successfully.');
+        };
+      };
+    }
+
+    // Load all audio files from IndexedDB and display them in the list
+    function loadAllAudioFiles1() {
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const cursorRequest = store.openCursor();
+        cursorRequest.onsuccess = function(event) {
+          const cursor = event.target.result;
+          if (cursor) {
+            const audioFile = cursor.value;
+            const audioUrl = URL.createObjectURL(audioFile.data);
+            const voiceLi = document.createElement('li');
+            const voiceAudio = document.createElement('audio');
+            const voiceDelete = document.createElement('button');
+            voiceAudio.src = audioUrl;
+            voiceAudio.controls = true;
+            voiceDelete.textContent = 'Delete';
+            voiceDelete.addEventListener('click', () => {
+              voiceList.removeChild(voiceLi);
+              URL.revokeObjectURL(audioUrl);
+              deleteAudioFile(audioFile.name);
+            });
+            voiceLi.appendChild(voiceAudio);
+            voiceLi.appendChild(voiceDelete);
+            voiceList.appendChild(voiceLi);
+            cursor.continue();
+          }
+        };
+      };
+    }
+  </script>
+  <script>
+    const startRecordingBtn = document.getElementById('start-recording-btn');
+    const voiceList = document.getElementById('voice-list');
+
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    startRecordingBtn.addEventListener('click', () => {
+      if (!mediaRecorder) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    function startRecording() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+          startRecordingBtn.textContent = 'Stop Recording';
+          mediaRecorder.addEventListener('dataavailable',async event => {
+            recordedChunks.push(event.data);
+            
+startRecordingBtn.textContent = '开始录音';
+  mediaRecorder = null;
+  const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+  recordedChunks = [];
+  // 将录制的音频保存到 IndexedDB
+  const timestamp = new Date().toISOString();
+  try {
+    await saveAudioFile(timestamp, recordedBlob);
+    // 在音频文件成功保存后将音频添加到列表中
+    addVoiceToList(recordedBlob, timestamp);
+  } catch (error) {
+    console.error('保存音频文件时出错：', error);
+  }
+            
+            
+            
+          });
+        })
+        .catch(error => {
+          console.error('Error accessing media devices.', error);
+        });
+    }
+
+    function stopRecording1() {
+      mediaRecorder.stop();
+      startRecordingBtn.textContent = 'Start Recording';
+      mediaRecorder = null;
+      const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+      recordedChunks = [];
+      // Save the recorded audio to IndexedDB
+      const timestamp = new Date().toISOString();
+      saveAudioFile(timestamp, recordedBlob);
+      // Add the voice to the list
+      addVoiceToList(recordedBlob, timestamp);
+    }
+    
+async function stopRecording() {
+  mediaRecorder.stop();
+  
+  /*
+  startRecordingBtn.textContent = '开始录音';
+  mediaRecorder = null;
+  const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
+  recordedChunks = [];
+  // 将录制的音频保存到 IndexedDB
+  const timestamp = new Date().toISOString();
+  try {
+    await saveAudioFile(timestamp, recordedBlob);
+    // 在音频文件成功保存后将音频添加到列表中
+    addVoiceToList(recordedBlob, timestamp);
+  } catch (error) {
+    console.error('保存音频文件时出错：', error);
+  }
+  */
+  
+}
+
+
+    function addVoiceToList(voiceBlob, name) {
+      const voiceUrl = URL.createObjectURL(voiceBlob);
+      const voiceLi = document.createElement('li');
+      const voiceAudio = document.createElement('audio');
+      const voiceDelete = document.createElement('button');
+      voiceAudio.src = voiceUrl;
+      voiceAudio.controls = true;
+      voiceDelete.textContent = 'Delete';
+      voiceDelete.addEventListener('click', () => {
+        voiceList.removeChild(voiceLi);
+        URL.revokeObjectURL(voiceUrl);
+        deleteAudioFile(name);
+      });
+      voiceLi.appendChild(voiceAudio);
+      voiceLi.appendChild(voiceDelete);
+      voiceList.appendChild(voiceLi);
+    }
+
+    // Load and display all audio files when the page loads
+    window.addEventListener('load', () => {
+      loadAllAudioFiles();
+      //loadAllFiles();
+    });
+  </script>
+</body>
+</html>
+
