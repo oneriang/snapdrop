@@ -92,6 +92,7 @@ class PeerUI {
                     <button id="stop-btn" style="display:none" >Stop Recording</button>
                     <audio id="player" controls style="display:none" ></audio>
                     <input type="file" multiple style="display:none;">
+                    <ul id="voice-list"></ul>
                 </div>
             </label>`
     }
@@ -117,6 +118,7 @@ class PeerUI {
         const startBtn = el.querySelector('#start-btn');
         const stopBtn = el.querySelector('#stop-btn');
         const player = el.querySelector('#player');
+        const voiceList = el.querySelector('#voice-list');
         let mediaRecorder;
         let recordedChunks = [];
 
@@ -133,13 +135,14 @@ class PeerUI {
                 
                 if (mediaRecorder.state == "recording")
                 {
-
-                    
                     mediaRecorder.addEventListener('stop', () => {
                         const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
                         recordedChunks = [];
                         //player.src = URL.createObjectURL(recordedBlob);
                         
+                        const timestamp = new Date().toISOString();
+                        addVoiceToList(recordedBlob, timestamp);
+
                         // 将录音文件发送给对方
                         const fileInput = document.createElement('input');
                         fileInput.type = 'file';
@@ -190,6 +193,32 @@ class PeerUI {
             });
         });
     
+        Events.on('file-received', e => {
+            console.log("file-received");
+            console.log(e.detail);
+
+            const timestamp = new Date().toISOString();
+            addVoiceToList(e.detail.blob, timestamp);
+        });
+
+        function addVoiceToList(voiceBlob, name) {
+            const voiceUrl = URL.createObjectURL(voiceBlob);
+            const voiceLi = document.createElement('li');
+            const voiceAudio = document.createElement('audio');
+            const voiceDelete = document.createElement('button');
+            voiceAudio.src = voiceUrl;
+            voiceAudio.controls = true;
+            voiceDelete.textContent = 'Delete';
+            voiceDelete.addEventListener('click', () => {
+              voiceList.removeChild(voiceLi);
+              URL.revokeObjectURL(voiceUrl);
+              deleteAudioFile(name);
+            });
+            voiceLi.appendChild(voiceAudio);
+            voiceLi.appendChild(voiceDelete);
+            voiceList.appendChild(voiceLi);
+          }
+
         function updateRecorderTime() {
 
             if (mediaRecorder.state == "recording"){
@@ -369,10 +398,12 @@ class ReceiveDialog extends Dialog {
 
     constructor() {
         super('receiveDialog');
+        /*
         Events.on('file-received', e => {
             this._nextFile(e.detail);
             window.blop.play();
         });
+        */
         this._filesQueue = [];
     }
 

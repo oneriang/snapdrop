@@ -8,11 +8,14 @@
   <!-- Web App Config -->
   <title>Snapdrop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="mvp.css?6">
+  <link rel="stylesheet" href="mvp.css?7">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-  <title>Voice Chat Demo</title>
+  <link rel="stylesheet" href="viewerjs/viewer.min.css?1" />
+  <script src="viewerjs/viewer.min.js?1"></script>
+
+  <title>Memo</title>
   <style>
     #voice-list {
       list-style: none;
@@ -47,6 +50,10 @@
 <body>
   <div id="map" style="height: 200px;"></div>
 
+  <button id="real-time-save-location-btn">Start Positioning</button>
+  <br>
+  <p id="location">...</p>
+  <br>
   <button id="save-location-btn">Save Location</button>
 
   <button id="start-recording-btn">Start Recording</button>
@@ -61,12 +68,15 @@
   <canvas id="hidden-canvas" style="display: none;"></canvas>
   <video id="camera-video" style="display: none;"></video>
 
-
+aaa
   <ul id="voice-list"></ul>
   <script>
 
     //alert(L);
 
+    //const img = document.getElementById("zoomImg");
+    //const viewer = new Viewer(img);
+    let gallery = null;
     const map = L.map('map').setView([35.6876063, 139.71242], 13); // Set the center of the map and the zoom level
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -120,28 +130,6 @@
       });
     }
 
-    function addLocationToList1(location, name) {
-      const locationLi = document.createElement('li');
-      const locationTime = document.createElement('span');
-      const locationLocation = document.createElement('span');
-      const locationDelete = document.createElement('button');
-
-      locationTime.textContent = new Date(location.timestamp).toLocaleString();
-      locationLocation.textContent = `Latitude: ${location.data.latitude}, Longitude: ${location.data.longitude}`;
-      locationDelete.textContent = 'Delete';
-
-      locationDelete.addEventListener('click', () => {
-        voiceList.removeChild(locationLi);
-        deleteLocation(name);
-      });
-
-      locationLi.appendChild(locationTime);
-      locationLi.appendChild(locationLocation);
-      locationLi.appendChild(locationDelete);
-      voiceList.appendChild(locationLi);
-    }
-
-
     function addLocationToList(location, name) {
       const locationLi = document.createElement('li');
       const locationTime = document.createElement('span');
@@ -167,8 +155,6 @@
       location.marker = marker; // Save a reference to the marker
       //alert(112);
     }
-
-
 
     function loadAllFiles() {
       const transaction = db.transaction(storeName, 'readonly');
@@ -199,7 +185,6 @@
         }
       };
     }
-
 
     const saveLocationBtn = document.getElementById('save-location-btn');
     saveLocationBtn.addEventListener('click', saveLocation);
@@ -280,22 +265,6 @@
       };
     }
 
-
-    function addImageToList1(imageContent, name, fileName) {
-      const imageLi = document.createElement('li');
-      const imageElement = document.createElement('img');
-      const imageDelete = document.createElement('button');
-      imageElement.src = imageContent;
-      imageDelete.textContent = 'Delete';
-      imageDelete.addEventListener('click', () => {
-        voiceList.removeChild(imageLi);
-        deleteImageContent(name);
-      });
-      imageLi.appendChild(imageElement);
-      imageLi.appendChild(imageDelete);
-      voiceList.appendChild(imageLi);
-    }
-
     function addImageToList(imageContent, name, fileName) {
       const imageLi = document.createElement('li');
       const imageElement = document.createElement('img');
@@ -314,8 +283,6 @@
       imageLi.appendChild(imageDelete);
       voiceList.appendChild(imageLi);
     }
-
-
 
     function deleteImageContent(name) {
       const request = indexedDB.open(dbName);
@@ -364,15 +331,12 @@
             cursor.continue();
           }
         };
+
+        transaction.oncomplete = function () {
+          gallery = new Viewer(document.getElementById('voice-list'));
+        };
       };
     }
-
-
-
-
-
-
-
   </script>
 
   <script>
@@ -433,35 +397,6 @@
       textLi.appendChild(textTime);
       voiceList.appendChild(textLi);
     }
-
-
-    function loadAllAudioFiles2() {
-      const request = indexedDB.open(dbName);
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(storeName, 'readonly');
-        const store = transaction.objectStore(storeName);
-        const cursorRequest = store.openCursor();
-        cursorRequest.onsuccess = function (event) {
-          const cursor = event.target.result;
-          if (cursor) {
-            const storedItem = cursor.value;
-            if (storedItem.data instanceof Blob) {
-              // This is an audio file
-              addVoiceToList(storedItem.data, storedItem.name);
-            } else {
-              // This is a text content
-              addTextToList(storedItem.data, storedItem.name);
-            }
-            cursor.continue();
-          }
-        };
-      };
-    }
-
-
-
-
   </script>
 
   <script>
@@ -476,21 +411,6 @@
       const db = event.target.result;
       const store = db.createObjectStore(storeName, { keyPath: 'name' });
     };
-
-    // Save audio file to IndexedDB
-    function saveAudioFile1(name, audioBlob) {
-      const request = indexedDB.open(dbName);
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(storeName, 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const audioFile = { name: name, data: audioBlob };
-        const putRequest = store.put(audioFile);
-        putRequest.onsuccess = function () {
-          console.log('Audio file saved successfully.');
-        };
-      };
-    }
 
     function saveAudioFile(name, audioBlob) {
       return new Promise((resolve, reject) => {
@@ -518,7 +438,6 @@
         };
       });
     }
-
 
     // Load audio file from IndexedDB
     function loadAudioFile(name) {
@@ -554,39 +473,6 @@
         };
       };
     }
-
-    // Load all audio files from IndexedDB and display them in the list
-    function loadAllAudioFiles1() {
-      const request = indexedDB.open(dbName);
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(storeName, 'readonly');
-        const store = transaction.objectStore(storeName);
-        const cursorRequest = store.openCursor();
-        cursorRequest.onsuccess = function (event) {
-          const cursor = event.target.result;
-          if (cursor) {
-            const audioFile = cursor.value;
-            const audioUrl = URL.createObjectURL(audioFile.data);
-            const voiceLi = document.createElement('li');
-            const voiceAudio = document.createElement('audio');
-            const voiceDelete = document.createElement('button');
-            voiceAudio.src = audioUrl;
-            voiceAudio.controls = true;
-            voiceDelete.textContent = 'Delete';
-            voiceDelete.addEventListener('click', () => {
-              voiceList.removeChild(voiceLi);
-              URL.revokeObjectURL(audioUrl);
-              deleteAudioFile(audioFile.name);
-            });
-            voiceLi.appendChild(voiceAudio);
-            voiceLi.appendChild(voiceDelete);
-            voiceList.appendChild(voiceLi);
-            cursor.continue();
-          }
-        };
-      };
-    }
   </script>
   <script>
     const startRecordingBtn = document.getElementById('start-recording-btn');
@@ -612,7 +498,7 @@
           mediaRecorder.addEventListener('dataavailable', async event => {
             recordedChunks.push(event.data);
 
-            startRecordingBtn.textContent = '开始录音';
+            startRecordingBtn.textContent = 'Start Recording';
             mediaRecorder = null;
             const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
             recordedChunks = [];
@@ -625,27 +511,11 @@
             } catch (error) {
               console.error('保存音频文件时出错：', error);
             }
-
-
-
           });
         })
         .catch(error => {
           console.error('Error accessing media devices.', error);
         });
-    }
-
-    function stopRecording1() {
-      mediaRecorder.stop();
-      startRecordingBtn.textContent = 'Start Recording';
-      mediaRecorder = null;
-      const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
-      recordedChunks = [];
-      // Save the recorded audio to IndexedDB
-      const timestamp = new Date().toISOString();
-      saveAudioFile(timestamp, recordedBlob);
-      // Add the voice to the list
-      addVoiceToList(recordedBlob, timestamp);
     }
 
     async function stopRecording() {
@@ -668,7 +538,6 @@
       */
 
     }
-
 
     function addVoiceToList(voiceBlob, name) {
       const voiceUrl = URL.createObjectURL(voiceBlob);
@@ -693,6 +562,133 @@
       loadAllAudioFiles();
       //loadAllFiles();
     });
+  </script>
+
+  <script>
+
+    const realTimesaveLocationBtn = document.getElementById('real-time-save-location-btn');
+
+    let idPositioning = null;
+    let isPositioning = false;
+    realTimesaveLocationBtn.addEventListener('click', () => {
+      if (!isPositioning) {
+        getLocation();
+        realTimesaveLocationBtn.textContent = 'Stop Positioning';
+        isPositioning = true;
+      } else {
+        stopLocation();
+        realTimesaveLocationBtn.textContent = 'Start Positioning';
+        isPositioning = false;
+      }
+    });
+
+    function saveRealTimeLocation(latitude, longitude) {
+      //alert(0);
+      //navigator.geolocation.getCurrentPosition(position => {
+      const timestamp = new Date().toISOString();
+      //const latitude = position.coords.latitude;
+      //const longitude = position.coords.longitude;
+      const location = {
+        name: timestamp,
+        data: {
+          latitude: latitude,
+          longitude: longitude
+        },
+        type: 'location',
+        timestamp: timestamp,
+        latitude: latitude,
+        longitude: longitude
+      };
+      //alert(3);
+      const request = indexedDB.open(dbName);
+      request.onsuccess = function (event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const putRequest = store.put(location);
+
+        putRequest.onsuccess = function () {
+          console.log('Location saved successfully.');
+          //loadAllFiles();
+          //alert(1);
+          addLocationToList(location, timestamp);
+        };
+
+        putRequest.onerror = function (error) {
+          //alert(2);
+          console.error('Error saving location:', error);
+        };
+      };
+
+      request.onerror = function (error) {
+        console.error('Error opening IndexedDB:', error);
+      };
+      //}, error => {
+      //  console.error('Error getting geolocation:', error);
+      //});
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        idPositioning = navigator.geolocation.watchPosition(showPosition, showError, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    function stopLocation() {
+      navigator.geolocation.clearWatch(idPositioning);
+    }
+
+    function showPosition(position) {
+      let lat = position.coords.latitude;
+      let lon = position.coords.longitude;
+      document.getElementById("location").innerHTML +=
+        "Latitude: " + lat + " : " + "Longitude: " + lon + "<br/>";
+
+      saveRealTimeLocation(lat, lon);
+
+      // 将数据发送到服务器
+      //sendDataToServer(lat, lon);
+    }
+
+    function showError(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("User denied the request for Geolocation.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("The request to get user location timed out.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("An unknown error occurred.");
+          break;
+      }
+    }
+
+    function sendDataToServer(lat, lon) {
+      fetch('/saveLocation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          latitude: lat,
+          longitude: lon
+        })
+      }).then(response => response.json())
+        .then(data => console.log('Success:', data))
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
   </script>
 </body>
 
