@@ -22,7 +22,6 @@ class ServerConnection {
         if (peerId) {
             endpoint += '/?peerid=' + peerId;
         }
-        //alert(endpoint);
         const ws = new WebSocket(endpoint);
 
         ws.binaryType = 'arraybuffer';

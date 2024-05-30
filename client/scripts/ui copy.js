@@ -1,18 +1,17 @@
 //ui.js
 
-const $ = query=>document.getElementById(query);
-const $$ = query=>document.body.querySelector(query);
-const isURL = text=>/^((https?:\/\/|www)[^\s]+)/g.test(text.toLowerCase());
+const $ = query => document.getElementById(query);
+const $$ = query => document.body.querySelector(query);
+const isURL = text => /^((https?:\/\/|www)[^\s]+)/g.test(text.toLowerCase());
 window.isDownloadSupported = (typeof document.createElement('a').download !== 'undefined');
 window.isProductionEnvironment = !window.location.host.startsWith('localhost');
 window.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const chatDialogs = {};
 
 const $log = $('log');
 
 // set display name
-Events.on('display-name', async e=>{
-    ////alert('display-name');
+Events.on('display-name',  e => {
+    //alert('display-name');
     console.log('display-name');
     console.log(e);
     const me = e.detail.message;
@@ -20,36 +19,8 @@ Events.on('display-name', async e=>{
 
     window.peerid = me.peerId;
     localStorage.setItem("peerId", me.peerId);
-
-    // 读取用户
-    let user = await crudOperation('Users', 'read', null, me.peerId);
-    console.log('User retrieved:', user);
-    //alert(JSON.stringify(user));
-    if (!user) {
-
-        // 创建用户
-        let userId = me.peerId;
-        await crudOperation('Users', 'create', {
-            userId: userId,
-            username: 'john_doe',
-            displayName: 'John Doe',
-            email: 'john@example.com',
-            password: 'hashed_password',
-            avatarUrl: '',
-            status: 'online',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-        console.log('User created with ID:', userId);
-
-        // 读取用户
-        user = await crudOperation('Users', 'read', null, userId);
-        console.log('User retrieved:', user);
-        //alert(JSON.stringify(user));
-    }
-
-    ////alert(me.peerId);
-    /*
+//alert(me.peerId);
+/*
         // 更新操作
         let userId = 1;
          crudOperation('Users', 'update', {
@@ -65,78 +36,44 @@ Events.on('display-name', async e=>{
 */
     //$displayName.textContent = 'You are known as ' + me.displayName;
     $displayName.textContent = 'You are known as ' + me.peerId;
-
+    
     $displayName.title = me.deviceName;
-}
-);
+});
 
 class PeersUI {
 
     constructor() {
-        Events.on('peer-joined', e=>this._onPeerJoined(e.detail));
-        Events.on('peer-left', e=>this._onPeerLeft(e.detail));
-        Events.on('peers', e=>this._onPeers(e.detail));
-        Events.on('file-progress', e=>this._onFileProgress(e.detail));
-        Events.on('paste', e=>this._onPaste(e));
+        Events.on('peer-joined', e => this._onPeerJoined(e.detail));
+        Events.on('peer-left', e => this._onPeerLeft(e.detail));
+        Events.on('peers', e => this._onPeers(e.detail));
+        Events.on('file-progress', e => this._onFileProgress(e.detail));
+        Events.on('paste', e => this._onPaste(e));
     }
 
     async _onPeerJoined(peer) {
         console.log("_onPeerJoined");
-        //alert('_onPeerJoined');
+
         console.log(peer.id);
-
-        // 读取用户
-        let user = await crudOperation('Users', 'read', null, peer.id);
-        console.log('User retrieved:', user);
-        //alert(JSON.stringify(user));
-        if (!user) {
-
-            // 创建用户
-            let userId = peer.id;
-            await crudOperation('Users', 'create', {
-                userId: userId,
-                username: 'john_doe1',
-                displayName: 'John Doe1',
-                email: 'john1@example.com',
+        
+        // 读取操作
+        let user = await crudOperation('Users', 'read', null, userId);
+        
+        let userId = await crudOperation('Users', 'create', {
+                peerId: peer.id,
+                username: 'john_doe',
+                displayName: 'John Doe',
+                email: 'john@example.com',
                 password: 'hashed_password',
                 avatarUrl: '',
                 status: 'online',
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
-            console.log('User created with ID:', userId);
-
-            // 读取用户
-            user = await crudOperation('Users', 'read', null, userId);
-            console.log('User retrieved:', user);
-            //alert(JSON.stringify(user));
-
-            // 创建联系人
-            let contactId = uuidv4();
-            await crudOperation('Contacts', 'create', {
-                contactId: contactId,
-                userId: window.peerid,
-                contactUserId: userId,
-                nickname: 'Jane',
-                status: 'friend',
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
-            console.log('Contact created with ID:', contactId);
-
-            // 读取联系人
-            let contact = await crudOperation('Contacts', 'read', null, contactId);
-            console.log('Contact retrieved:', contact);
-            //alert(JSON.stringify(contact));
-
-            await createChatSession(userId, 'single', [window.peerid, userId]);
-
-        }
-
-        if ($(peer.id))
-            return;
-        // peer already exists
-
+            
+        alert(userId);
+        
+        if ($(peer.id)) return; // peer already exists
+       
         const peerUI = new PeerUI(peer);
         $$('x-peers').appendChild(peerUI.$el);
         // setTimeout(e => window.animateBackground(false), 1750); // Stop animation
@@ -144,21 +81,19 @@ class PeersUI {
 
     _onPeers(peers) {
         this._clearPeers();
-        peers.forEach(peer=>this._onPeerJoined(peer));
+        peers.forEach(peer => this._onPeerJoined(peer));
     }
 
     _onPeerLeft(peerId) {
         const $peer = $(peerId);
-        if (!$peer)
-            return;
+        if (!$peer) return;
         $peer.remove();
     }
 
     _onFileProgress(progress) {
         const peerId = progress.sender || progress.recipient;
         const $peer = $(peerId);
-        if (!$peer)
-            return;
+        if (!$peer) return;
         $peer.ui.setProgress(progress.progress);
     }
 
@@ -167,7 +102,9 @@ class PeersUI {
     }
 
     _onPaste(e) {
-        const files = e.clipboardData.files || e.clipboardData.items.filter(i=>i.type.indexOf('image') > -1).map(i=>i.getAsFile());
+        const files = e.clipboardData.files || e.clipboardData.items
+            .filter(i => i.type.indexOf('image') > -1)
+            .map(i => i.getAsFile());
         const peers = document.querySelectorAll('x-peer');
         // send the pasted image content to the only peer if there is one
         // otherwise, select the peer somehow by notifying the client that
@@ -236,25 +173,23 @@ class PeerUI {
         let recordedChunks = [];
 
         const recorderTime = el.querySelector('#recorder-time');
-
+        
         let startTime;
-
-        startBtn.addEventListener('click', ()=>{
-            navigator.mediaDevices.getUserMedia({
-                audio: true
-            }).then(stream=>{
+    
+        startBtn.addEventListener('click', () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
                 if (!mediaRecorder) {
                     mediaRecorder = new MediaRecorder(stream);
                 }
-
-                if (mediaRecorder.state == "recording") {
-                    mediaRecorder.addEventListener('stop', ()=>{
-                        const recordedBlob = new Blob(recordedChunks,{
-                            type: 'audio/mp3'
-                        });
+                
+                if (mediaRecorder.state == "recording")
+                {
+                    mediaRecorder.addEventListener('stop', () => {
+                        const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
                         recordedChunks = [];
                         //player.src = URL.createObjectURL(recordedBlob);
-
+                        
                         const timestamp = new Date().toISOString();
                         addVoiceToList(recordedBlob, timestamp);
 
@@ -262,56 +197,52 @@ class PeerUI {
                         const fileInput = document.createElement('input');
                         fileInput.type = 'file';
                         fileInput.style.display = 'none';
-
+        
                         const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(new File([recordedBlob],'recorded-audio.mp3',{
-                            type: 'audio/mp3'
-                        }));
+                        dataTransfer.items.add(new File([recordedBlob], 'recorded-audio.mp3', { type: 'audio/mp3' }));
                         fileInput.files = dataTransfer.files;
-
+        
                         Events.fire('files-selected', {
                             files: fileInput.files,
                             to: this._peer.id
                         });
-                        fileInput.value = null;
-                        // reset input
+                        fileInput.value = null; // reset input
 
                         mediaRecorder = null;
-                    }
-                    );
+                    });
 
                     mediaRecorder.stop();
                     // startBtn.disabled = false;
                     // stopBtn.disabled = true;
 
                     updateRecorderTime();
-
+                 
                     el.querySelector('x-icon').classList.remove('recording');
-                } else {
+                }
+                else
+                {
                     mediaRecorder.start();
                     // startBtn.disabled = true;
                     // stopBtn.disabled = false;
 
                     el.querySelector('x-icon').classList.add('recording');
 
+                                
                     startTime = Date.now();
                     updateRecorderTime();
 
-                    mediaRecorder.addEventListener('dataavailable', event=>{
+                    mediaRecorder.addEventListener('dataavailable', event => {
                         recordedChunks.push(event.data);
-                    }
-                    );
+                    });
                 }
 
-            }
-            ).catch(error=>{
-                //alert(error)
-                console.error('Error accessing media devices.', error);
-            }
-            );
-        }
-        );
-
+            })
+            .catch(error => {
+                alert(error)
+            console.error('Error accessing media devices.', error);
+            });
+        });
+    
         // Events.on('file-received', e => {
         //     console.log("file-received");
         //     console.log(e.detail);
@@ -328,20 +259,19 @@ class PeerUI {
             voiceAudio.src = voiceUrl;
             voiceAudio.controls = true;
             voiceDelete.textContent = 'Delete';
-            voiceDelete.addEventListener('click', ()=>{
-                voiceList.removeChild(voiceLi);
-                URL.revokeObjectURL(voiceUrl);
-                deleteAudioFile(name);
-            }
-            );
+            voiceDelete.addEventListener('click', () => {
+              voiceList.removeChild(voiceLi);
+              URL.revokeObjectURL(voiceUrl);
+              deleteAudioFile(name);
+            });
             voiceLi.appendChild(voiceAudio);
             voiceLi.appendChild(voiceDelete);
             voiceList.appendChild(voiceLi);
-        }
+          }
 
         function updateRecorderTime() {
 
-            if (mediaRecorder.state == "recording") {
+            if (mediaRecorder.state == "recording"){
                 const currentTime = Date.now();
                 const elapsedTime = currentTime - startTime;
                 const minutes = Math.floor(elapsedTime / 60000);
@@ -349,21 +279,21 @@ class PeerUI {
                 recorderTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 requestAnimationFrame(updateRecorderTime);
             }
-
-        }
+            
+          }
 
         console.log(4)
-
+        
         // stopBtn.addEventListener('click', () => {
         //     mediaRecorder.stop();
         //     // startBtn.disabled = false;
         //     // stopBtn.disabled = true;
-
+            
         //     mediaRecorder.addEventListener('stop', () => {
         //         const recordedBlob = new Blob(recordedChunks, { type: 'audio/mp3' });
         //         recordedChunks = [];
         //         //player.src = URL.createObjectURL(recordedBlob);
-
+                
         //         // 将录音文件发送给对方
         //         const fileInput = document.createElement('input');
         //         fileInput.type = 'file';
@@ -390,17 +320,17 @@ class PeerUI {
 
     _bindListeners(el) {
         //el.querySelector('input').addEventListener('change', e => this._onFilesSelected(e));
-        el.addEventListener('click', e=>this._onClick(e));
-        el.addEventListener('drop', e=>this._onDrop(e));
-        el.addEventListener('dragend', e=>this._onDragEnd(e));
-        el.addEventListener('dragleave', e=>this._onDragEnd(e));
-        el.addEventListener('dragover', e=>this._onDragOver(e));
-        el.addEventListener('contextmenu', e=>this._onRightClick(e));
-        el.addEventListener('touchstart', e=>this._onTouchStart(e));
-        el.addEventListener('touchend', e=>this._onTouchEnd(e));
+        el.addEventListener('click', e => this._onClick(e));
+        el.addEventListener('drop', e => this._onDrop(e));
+        el.addEventListener('dragend', e => this._onDragEnd(e));
+        el.addEventListener('dragleave', e => this._onDragEnd(e));
+        el.addEventListener('dragover', e => this._onDragOver(e));
+        el.addEventListener('contextmenu', e => this._onRightClick(e));
+        el.addEventListener('touchstart', e => this._onTouchStart(e));
+        el.addEventListener('touchend', e => this._onTouchEnd(e));
         // prevent browser's default file drop behavior
-        Events.on('dragover', e=>e.preventDefault());
-        Events.on('drop', e=>e.preventDefault());
+        Events.on('dragover', e => e.preventDefault());
+        Events.on('drop', e => e.preventDefault());
     }
 
     _displayName() {
@@ -429,8 +359,7 @@ class PeerUI {
             files: files,
             to: this._peer.id
         });
-        $input.value = null;
-        // reset input
+        $input.value = null; // reset input
     }
 
     setProgress(progress) {
@@ -452,15 +381,7 @@ class PeerUI {
 
     _onClick(e) {
         e.preventDefault();
-        //Events.fire('chat-recipient', this._peer.id);
-
-        if (!$('x-dialog-' + this._peer.id)) {
-            const chatDialog = new ChatDialog(this._peer.id);
-            chatDialogs[this._peer.id] = chatDialog;
-        } else {
-            const chatDialog = chatDialogs[this._peer.id];
-            chatDialog.show();
-        }
+        Events.fire('chat-recipient', this._peer.id);
     }
 
     _onDrop(e) {
@@ -489,66 +410,32 @@ class PeerUI {
 
     _onTouchStart(e) {
         this._touchStart = Date.now();
-        this._touchTimer = setTimeout(_=>this._onTouchEnd(), 610);
+        this._touchTimer = setTimeout(_ => this._onTouchEnd(), 610);
     }
 
     _onTouchEnd(e) {
         if (Date.now() - this._touchStart < 500) {
             clearTimeout(this._touchTimer);
             el.querySelector('#start-btn').click();
-        } else {
-            // this was a long tap
-            if (e)
-                e.preventDefault();
-            ////alert(1)
+        } else { // this was a long tap
+            if (e) e.preventDefault();
+            //alert(1)
             Events.fire('text-recipient', this._peer.id);
             //this._inputClick();
         }
     }
-
+    
     _inputClick() {
         this.$el.querySelector('input').click();
     }
 }
 
-Events.on('text-received', e=> {
-    const peerId = e.detail.sender;
-    if (!$('x-dialog-' + peerId)) {
-        const chatDialog = new ChatDialog(peerId);
-        chatDialogs[peerId] = chatDialog;
-        chatDialog._onText(e);
-    } else {
-        const chatDialog = chatDialogs[peerId];
-        chatDialog._onText(e);
-    }
-})
-
-
 
 class Dialog {
-
-    html() {
-        return `
-            <!-- Chat Dialog -->
-        `
-    }
-
     constructor(id) {
-        this.id = id;
-        this._initDom();
         this.$el = $(id);
-        this.$el.querySelectorAll('[close]').forEach(el=>el.addEventListener('click', e=>this.hide()))
+        this.$el.querySelectorAll('[close]').forEach(el => el.addEventListener('click', e => this.hide()))
         this.$autoFocus = this.$el.querySelector('[autofocus]');
-    }
-
-    _initDom() {
-        const el = document.createElement('x-dialog');
-        el.id = this.id;
-        el.innerHTML = this.html();
-        el.ui = this;
-        this.$el = el;
-
-        $$('x-dialogs').appendChild(this.$el);
     }
 
     _onRecipient(recipient) {
@@ -558,8 +445,7 @@ class Dialog {
 
     show() {
         this.$el.setAttribute('show', 1);
-        if (this.$autoFocus)
-            this.$autoFocus.focus();
+        if (this.$autoFocus) this.$autoFocus.focus();
     }
 
     hide() {
@@ -571,115 +457,31 @@ class Dialog {
 
 class ChatDialog extends Dialog {
 
-    html() {
-        return `
-            <!-- Chat Dialog -->
-            <x-background class="full center">
-                <x-paper shadow="2">
-                    <h1 id="senderId">xxx</h1>
-                    <div id="chatList">
-                        <!-- <div class="textarea">
-                            <p>Hello. How are you today?</p>
-                            <span class="time-left">11:00</span>
-                        </div>
-                        
-                        <div class="textarea darker">
-                            <p style="text-align: right;">Hey! I'm fine. Thanks for asking!</p>
-                            <span class="time-right">11:01</span>
-                        </div> -->
-                    </div>
-
-                    <div id="chatTextInput" class="textarea" 
-                        style="background: white;border: solid thin;" 
-                        role="textbox" 
-                        placeholder="Send a message" 
-                        autocomplete="off" 
-                        autofocus contenteditable></div>
-
-                        <div class="row-reverse">
-                            <button class="button" id="chatTextSendButton" >Send</button>
-                            <a class="button" close>Cancel</a>
-                        </div>
-                </x-paper>
-            </x-background>
-        `
-    }
-    
-    constructor(id) {
-        
-        super('x-dialog-' + id);
-
-        // Events.on('chat-recipient', e=>this._onRecipient(e.detail));
-        // Events.on('text-received', e=>this._onText(e.detail))
+    constructor() {
+        super('chatDialog');
+        Events.on('chat-recipient', e => this._onRecipient(e.detail));
+        Events.on('text-received', e => this._onText(e.detail))
         this.$senderId = this.$el.querySelector('#senderId');
         this.$chatList = this.$el.querySelector('#chatList');
         this.$chatText = this.$el.querySelector('#chatTextInput');
         const button = this.$el.querySelector('#chatTextSendButton');
-        button.addEventListener('click', e=>this._send(e));
-        
-        this.id = id;
-        this._recipient = id;
-        this.$senderId.innerText = this._recipient;
-        this.sessionId = this._recipient;
-        const me = this;
-        async function b() {
-            let messages = await crudOperation('Messages', 'readByIndex', null, id, 'sessionId', 'timestamp', 'desc');
-            messages.forEach(msg => {
-                let chatMessage = '';
-                const text = msg.content;
-                if (text) {
-
-                    const element = document.createElement("div");
-
-                    if (isURL(text)) {
-                        chatMessage = `
-                            <p style="text-align: left; margin-top: 4px; margin-bottom: 4px;">
-                                <a href="${text}" target="_blank">${text}</a>
-                            </p>
-                        `;
-                    } else {
-                        if (msg.senderId == me.id) {
-                            chatMessage = `
-                                <p style="text-align: left; margin-top: 4px; margin-bottom: 4px;">${text}</p>
-                            `;  
-                            element.className = 'textareaChat';
-                        } else {
-                            chatMessage = `
-                                <p style="text-align: right; margin-top: 4px; margin-bottom: 4px;">${text}</p>
-                            `;
-                            element.className = 'textareaChat darker';
-                        }
-                    }
-                    // chatMessage += `
-                    //     <span class="time-left">${new Date().toISOString()}</span>
-                    // `;
-                    element.innerHTML = chatMessage;
-                    me.$chatList.appendChild(element);
-                }
-    
-            });
-            me.show();
-        }
-        b();
+        button.addEventListener('click', e => this._send(e));
     }
 
-    // _onRecipient(recipient) {
-    //     if (this._recipient != recipient) {
-    //         this._recipient = recipient;
-    //         this.$senderId.innerText = this._recipient;
 
-    //         this.sessionId = this._recipient;
-
-    //         this.show();
-
-    //     }
-    // }
+    _onRecipient(recipient) {
+        if (this._recipient != recipient) {
+            this._recipient = recipient;
+            this.$senderId.innerText = this._recipient;
+            this.show();                
+        }
+    }
 
     hide() {
         super.hide();
     }
 
-    async _send(e) {
+    _send(e) {
         e.preventDefault();
         if (this.$chatText.innerText == '') {
             return;
@@ -688,9 +490,6 @@ class ChatDialog extends Dialog {
             to: this._recipient,
             text: this.$chatText.innerText
         });
-
-        await createMessage(this.sessionId, window.peerid, this._recipient, this.$chatText.innerText, 'text');
-
         let chatMessage = `
             <p style="text-align: right; margin-top: 4px; margin-bottom: 4px;">${this.$chatText.innerText}</p>
         `;
@@ -698,22 +497,19 @@ class ChatDialog extends Dialog {
         //     <span class="time-right">${new Date().toISOString()}</span>
         // `;
         const element = document.createElement("div");
-        element.className = 'textareaChat darker';
+        element.className = 'textareaChat darker'; 
         element.innerHTML = chatMessage;
         this.$chatList.appendChild(element);
         this.$chatText.innerText = '';
     }
 
-    async _onText(e) {
+    _onText(e) {
         console.log("_onText");
-        console.log(e.detail);
+        console.log(e);
 
-        //Events.fire('chat-recipient', e.detail.sender);
-
-        await createMessage(this.sessionId, this._recipient, window.peerid, e.detail.text, 'text');
-
+        Events.fire('chat-recipient', e.sender);
         let chatMessage = '';
-        const text = e.detail.text;
+        const text = e.text;
         if (isURL(text)) {
             chatMessage = `
                 <p style="text-align: left; margin-top: 4px; margin-bottom: 4px;">
@@ -729,7 +525,7 @@ class ChatDialog extends Dialog {
         //     <span class="time-left">${new Date().toISOString()}</span>
         // `;
         const element = document.createElement("div");
-        element.className = 'textareaChat';
+        element.className = 'textareaChat'; 
         element.innerHTML = chatMessage;
         this.$chatList.appendChild(element);
 
@@ -741,38 +537,33 @@ class ReceiveDialog extends Dialog {
 
     constructor() {
         super('receiveDialog');
-
-        Events.on('file-received', e=>{
+        
+        Events.on('file-received', e => {
             this._nextFile(e.detail);
             window.blop.play();
-        }
-        );
-
+        });
+        
         this._filesQueue = [];
     }
 
     _nextFile(nextFile) {
-        if (nextFile)
-            this._filesQueue.push(nextFile);
-        if (this._busy)
-            return;
+        if (nextFile) this._filesQueue.push(nextFile);
+        if (this._busy) return;
         this._busy = true;
         const file = this._filesQueue.shift();
         this._displayFile(file);
     }
 
     _dequeueFile() {
-        if (!this._filesQueue.length) {
-            // nothing to do
+        if (!this._filesQueue.length) { // nothing to do
             this._busy = false;
             return;
         }
         // dequeue next file
-        setTimeout(_=>{
+        setTimeout(_ => {
             this._busy = false;
             this._nextFile();
-        }
-        , 300);
+        }, 300);
     }
 
     _displayFile(file) {
@@ -786,11 +577,11 @@ class ReceiveDialog extends Dialog {
         $a.href = url;
         $a.download = file.name;
 
-        if (this._autoDownload()) {
+        if(this._autoDownload()){
             $a.click()
             return
         }
-        if (file.mime.split('/')[0] === 'image') {
+        if(file.mime.split('/')[0] === 'image'){
             console.log('the file is image');
             this.$el.querySelector('.preview').style.visibility = 'inherit';
             this.$el.querySelector("#img-preview").src = url;
@@ -800,12 +591,11 @@ class ReceiveDialog extends Dialog {
         this.$el.querySelector('#fileSize').textContent = this._formatFileSize(file.size);
         this.show();
 
-        if (window.isDownloadSupported)
-            return;
+        if (window.isDownloadSupported) return;
         // fallback for iOS
         $a.target = '_blank';
         const reader = new FileReader();
-        reader.onload = e=>$a.href = reader.result;
+        reader.onload = e => $a.href = reader.result;
         reader.readAsDataURL(file.blob);
     }
 
@@ -820,11 +610,11 @@ class ReceiveDialog extends Dialog {
         $a.href = url;
         $a.download = file.name;
 
-        if (this._autoDownload()) {
+        if(this._autoDownload()){
             $a.click()
             return
         }
-        if (file.mime.split('/')[0] === 'image') {
+        if(file.mime.split('/')[0] === 'image'){
             console.log('the file is image');
             this.$el.querySelector('.preview').style.visibility = 'inherit';
             this.$el.querySelector("#img-preview").src = url;
@@ -834,12 +624,11 @@ class ReceiveDialog extends Dialog {
         this.$el.querySelector('#fileSize').textContent = this._formatFileSize(file.size);
         this.show();
 
-        if (window.isDownloadSupported)
-            return;
+        if (window.isDownloadSupported) return;
         // fallback for iOS
         $a.target = '_blank';
         const reader = new FileReader();
-        reader.onload = e=>$a.href = reader.result;
+        reader.onload = e => $a.href = reader.result;
         reader.readAsDataURL(file.blob);
     }
 
@@ -862,18 +651,20 @@ class ReceiveDialog extends Dialog {
         this._dequeueFile();
     }
 
-    _autoDownload() {
+
+    _autoDownload(){
         return !this.$el.querySelector('#autoDownload').checked
     }
 }
 
+
 class SendTextDialog extends Dialog {
     constructor() {
         super('sendTextDialog');
-        Events.on('text-recipient', e=>this._onRecipient(e.detail))
+        Events.on('text-recipient', e => this._onRecipient(e.detail))
         this.$text = this.$el.querySelector('#textInput');
         const button = this.$el.querySelector('form');
-        button.addEventListener('submit', e=>this._send(e));
+        button.addEventListener('submit', e => this._send(e));
     }
 
     _onRecipient(recipient) {
@@ -891,8 +682,7 @@ class SendTextDialog extends Dialog {
     }
 
     _handleShareTargetText() {
-        if (!window.shareTargetText)
-            return;
+        if (!window.shareTargetText) return;
         this.$text.textContent = window.shareTargetText;
         window.shareTargetText = '';
     }
@@ -912,7 +702,7 @@ class ReceiveTextDialog extends Dialog {
         //Events.on('text-received', e => this._onText(e.detail))
         this.$text = this.$el.querySelector('#text');
         const $copy = this.$el.querySelector('#copy');
-        copy.addEventListener('click', _=>this._onCopy());
+        copy.addEventListener('click', _ => this._onCopy());
     }
 
     _onText(e) {
@@ -940,43 +730,42 @@ class ReceiveTextDialog extends Dialog {
 class Toast extends Dialog {
     constructor() {
         super('toast');
-        Events.on('notify-user', e=>this._onNotfiy(e.detail));
+        Events.on('notify-user', e => this._onNotfiy(e.detail));
     }
 
     _onNotfiy(message) {
         this.$el.textContent = message;
         this.show();
-        setTimeout(_=>this.hide(), 3000);
+        setTimeout(_ => this.hide(), 3000);
     }
 }
+
 
 class Notifications {
 
     constructor() {
         // Check if the browser supports notifications
-        if (!('Notification'in window))
-            return;
+        if (!('Notification' in window)) return;
 
         // Check whether notification permissions have already been granted
         if (Notification.permission !== 'granted') {
             this.$button = $('notification');
             this.$button.removeAttribute('hidden');
-            this.$button.addEventListener('click', e=>this._requestPermission());
+            this.$button.addEventListener('click', e => this._requestPermission());
         }
-        Events.on('text-received', e=>this._messageNotification(e.detail.text));
-        Events.on('file-received', e=>this._downloadNotification(e.detail.name));
+        Events.on('text-received', e => this._messageNotification(e.detail.text));
+        Events.on('file-received', e => this._downloadNotification(e.detail.name));
     }
 
     _requestPermission() {
-        Notification.requestPermission(permission=>{
+        Notification.requestPermission(permission => {
             if (permission !== 'granted') {
                 Events.fire('notify-user', Notifications.PERMISSION_ERROR || 'Error');
                 return;
             }
             this._notify('Even more snappy sharing!');
             this.$button.setAttribute('hidden', 1);
-        }
-        );
+        });
     }
 
     _notify(message, body) {
@@ -986,22 +775,20 @@ class Notifications {
         }
         let notification;
         try {
-            notification = new Notification(message,config);
+            notification = new Notification(message, config);
         } catch (e) {
             // Android doesn't support "new Notification" if service worker is installed
-            if (!serviceWorker || !serviceWorker.showNotification)
-                return;
+            if (!serviceWorker || !serviceWorker.showNotification) return;
             notification = serviceWorker.showNotification(message, config);
         }
 
         // Notification is persistent on Android. We have to close it manually
-        const visibilitychangeHandler = ()=>{
-            if (document.visibilityState === 'visible') {
+        const visibilitychangeHandler = () => {                             
+            if (document.visibilityState === 'visible') {    
                 notification.close();
                 Events.off('visibilitychange', visibilitychangeHandler);
-            }
-        }
-        ;
+            }                                                       
+        };                                                                                
         Events.on('visibilitychange', visibilitychangeHandler);
 
         return notification;
@@ -1011,10 +798,10 @@ class Notifications {
         if (document.visibilityState !== 'visible') {
             if (isURL(message)) {
                 const notification = this._notify(message, 'Click to open link');
-                this._bind(notification, e=>window.open(message, '_blank', null, true));
+                this._bind(notification, e => window.open(message, '_blank', null, true));
             } else {
                 const notification = this._notify(message, 'Click to copy text');
-                this._bind(notification, e=>this._copyText(message, notification));
+                this._bind(notification, e => this._copyText(message, notification));
             }
         }
     }
@@ -1022,9 +809,8 @@ class Notifications {
     _downloadNotification(message) {
         if (document.visibilityState !== 'visible') {
             const notification = this._notify(message, 'Click to download');
-            if (!window.isDownloadSupported)
-                return;
-            this._bind(notification, e=>this._download(notification));
+            if (!window.isDownloadSupported) return;
+            this._bind(notification, e => this._download(notification));
         }
     }
 
@@ -1035,30 +821,28 @@ class Notifications {
 
     _copyText(message, notification) {
         notification.close();
-        if (!navigator.clipboard.writeText(message))
-            return;
+        if (!navigator.clipboard.writeText(message)) return;
         this._notify('Copied text to clipboard');
     }
 
     _bind(notification, handler) {
         if (notification.then) {
-            notification.then(e=>serviceWorker.getNotifications().then(notifications=>{
+            notification.then(e => serviceWorker.getNotifications().then(notifications => {
                 serviceWorker.addEventListener('notificationclick', handler);
-            }
-            ));
+            }));
         } else {
             notification.onclick = handler;
         }
     }
 }
 
+
 class NetworkStatusUI {
 
     constructor() {
-        window.addEventListener('offline', e=>this._showOfflineMessage(), false);
-        window.addEventListener('online', e=>this._showOnlineMessage(), false);
-        if (!navigator.onLine)
-            this._showOfflineMessage();
+        window.addEventListener('offline', e => this._showOfflineMessage(), false);
+        window.addEventListener('online', e => this._showOnlineMessage(), false);
+        if (!navigator.onLine) this._showOfflineMessage();
     }
 
     _showOfflineMessage() {
@@ -1080,25 +864,23 @@ class WebShareTargetUI {
         let shareTargetText = title ? title : '';
         shareTargetText += text ? shareTargetText ? ' ' + text : text : '';
 
-        if (url)
-            shareTargetText = url;
-        // We share only the Link - no text. Because link-only text becomes clickable.
+        if(url) shareTargetText = url; // We share only the Link - no text. Because link-only text becomes clickable.
 
-        if (!shareTargetText)
-            return;
+        if (!shareTargetText) return;
         window.shareTargetText = shareTargetText;
         history.pushState({}, 'URL Rewrite', '/');
         console.log('Shared Target Text:', '"' + shareTargetText + '"');
     }
 }
 
+
 class Snapdrop {
     constructor() {
         const server = new ServerConnection();
         const peers = new PeersManager(server);
         const peersUI = new PeersUI();
-        Events.on('load', e=>{
-            // const chatDialog = new ChatDialog();
+        Events.on('load', e => {
+            const chatDialog = new ChatDialog();
             const receiveDialog = new ReceiveDialog();
             const sendTextDialog = new SendTextDialog();
             const receiveTextDialog = new ReceiveTextDialog();
@@ -1106,33 +888,33 @@ class Snapdrop {
             const notifications = new Notifications();
             const networkStatusUI = new NetworkStatusUI();
             const webShareTargetUI = new WebShareTargetUI();
-        }
-        );
+        });
     }
 }
 
 const snapdrop = new Snapdrop();
 
-if ('serviceWorker'in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').then(serviceWorker=>{
-        console.log('Service Worker registered');
-        window.serviceWorker = serviceWorker
-    }
-    );
+
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(serviceWorker => {
+            console.log('Service Worker registered');
+            window.serviceWorker = serviceWorker
+        });
 }
 
-window.addEventListener('beforeinstallprompt', e=>{
+window.addEventListener('beforeinstallprompt', e => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
         // don't display install banner when installed
         return e.preventDefault();
     } else {
         const btn = document.querySelector('#install')
         btn.hidden = false;
-        btn.onclick = _=>e.prompt();
+        btn.onclick = _ => e.prompt();
         return e.preventDefault();
     }
-}
-);
+});
 
 /*
 // Background Animation
@@ -1206,142 +988,172 @@ as the user has dismissed the permission prompt several times.
 This can be reset in Page Info
 which can be accessed by clicking the lock icon next to the URL.`;
 
-document.body.onclick = e=>{
-    // safari hack to fix audio
+document.body.onclick = e => { // safari hack to fix audio
     document.body.onclick = null;
-    if (!(/.*Version.*Safari.*/.test(navigator.userAgent)))
-        return;
+    if (!(/.*Version.*Safari.*/.test(navigator.userAgent))) return;
     blop.play();
 }
 
 //####################################
 
-const db = new Dexie('chatAppDB');
-//alert(1);
-db.version(1).stores({
-    Users: 'userId,username,email',
-    Contacts: 'contactId,userId,contactUserId',
-    ChatSessions: 'sessionId,sessionType,*participants,createdAt,updatedAt',
-    Messages: 'messageId,sessionId,senderId,receiverId,timestamp,content,contentType,status',
-    CallRecords: 'callId,callerId,receiverId,startTime,[callerId+receiverId]'
-});
+function initDB() {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open('chatAppDB', 1);
 
-db.open().catch((error)=>{
-    console.error('Failed to open database:', error);
-}
-);
+        request.onupgradeneeded = function(event) {
+            let db = event.target.result;
 
-async function crudOperation(storeName, operation, data, key, indexField, sortField = null, sortOrder = 'asc') {
-    try {
-        switch (operation) {
-        case 'create':
-            return await db[storeName].add(data);
-        case 'read':
-            return await db[storeName].get(key);
-        case 'update':
-            return await db[storeName].put(data);
-        case 'delete':
-            return await db[storeName].delete(key);
-        // case 'readByIndex':
-        //     return await db[storeName].where(indexField).equals(key).toArray();
-        // case 'readByCompositeIndex':
-        //     return await db[storeName].where(indexField).equals(key).toArray();
-        case 'readByIndex':
-            if (sortField) {
-                return await db[storeName]
-                    .where(indexField)
-                    .equals(key)
-                    .sortBy(sortField, sortOrder);
-            } else {
-                return await db[storeName]
-                    .where(indexField)
-                    .equals(key)
-                    .toArray();
+            if (!db.objectStoreNames.contains('Users')) {
+                let userStore = db.createObjectStore('Users', { keyPath: 'userId', autoIncrement: true });
+                userStore.createIndex('username', 'username', { unique: true });
+                userStore.createIndex('email', 'email', { unique: true });
             }
-        case 'readByCompositeIndex':
-            return await db[storeName]
-                .where(indexField)
-                .equals(key)
-                .toArray();
-        default:
-            throw new Error('Invalid operation');
-        }
-    } catch (error) {
-        console.error(`Error during ${operation} operation on ${storeName}:`, error);
-        throw error;
-    }
+
+            if (!db.objectStoreNames.contains('Contacts')) {
+                let contactStore = db.createObjectStore('Contacts', { keyPath: 'contactId', autoIncrement: true });
+                contactStore.createIndex('userId', 'userId');
+                contactStore.createIndex('contactUserId', 'contactUserId');
+            }
+
+            if (!db.objectStoreNames.contains('ChatSessions')) {
+                let sessionStore = db.createObjectStore('ChatSessions', { keyPath: 'sessionId', autoIncrement: true });
+                sessionStore.createIndex('sessionType', 'sessionType');
+            }
+
+            if (!db.objectStoreNames.contains('Messages')) {
+                let messageStore = db.createObjectStore('Messages', { keyPath: 'messageId', autoIncrement: true });
+                messageStore.createIndex('sessionId', 'sessionId');
+                messageStore.createIndex('senderId', 'senderId');
+                messageStore.createIndex('timestamp', 'timestamp');
+            }
+
+            if (!db.objectStoreNames.contains('CallRecords')) {
+                let callStore = db.createObjectStore('CallRecords', { keyPath: 'callId', autoIncrement: true });
+                callStore.createIndex('callerId', 'callerId');
+                callStore.createIndex('receiverId', 'receiverId');
+                callStore.createIndex('startTime', 'startTime');
+            }
+        };
+
+        request.onsuccess = function(event) {
+            console.log('Database initialized successfully');
+            resolve();
+        };
+
+        request.onerror = function(event) {
+            console.error('Database initialization failed', event.target.errorCode);
+            reject(event.target.errorCode);
+        };
+    });
 }
 
-async function readMessagesBySessionId(sessionId) {
+function crudOperation(storeName, operation, data, key) {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open('chatAppDB', 1);
+
+        request.onsuccess = function(event) {
+            let db = event.target.result;
+            let transaction = db.transaction([storeName], 'readwrite');
+            let store = transaction.objectStore(storeName);
+
+            let dbRequest;
+            switch (operation) {
+                case 'create':
+                    dbRequest = store.add(data);
+                    break;
+                case 'read':
+                    dbRequest = store.get(key);
+                    break;
+                case 'update':
+                    dbRequest = store.put(data);
+                    break;
+                case 'delete':
+                    dbRequest = store.delete(key);
+                    break;
+                default:
+                    console.error('Invalid operation');
+                    reject('Invalid operation');
+                    return;
+            }
+
+            dbRequest.onsuccess = function() {
+                console.log(`${operation} operation successful on ${storeName}`);
+                resolve(dbRequest.result);
+            };
+
+            dbRequest.onerror = function(event) {
+                console.error(`Error during ${operation} operation on ${storeName}`, event.target.errorCode);
+                reject(event.target.errorCode);
+            };
+        };
+
+        request.onerror = function(event) {
+            console.error('Database error', event.target.errorCode);
+            reject(event.target.errorCode);
+        };
+    });
+}
+
+// 调用示例
+async function exampleUsage() {
     try {
-        let messages = await crudOperation('Messages', 'readByIndex', null, sessionId, 'sessionId');
-        console.log('Messages retrieved by sessionId:', messages);
-    } catch (error) {
-        console.error('Error during read by index operation:', error);
-    }
-}
-
-async function b() {
-    await readMessagesBySessionId('79e310e8-832a-4342-bc5d-434e1a4a2c9e');
-}
-b();
-
-// 调用示例函数
-readMessagesBySessionId('some-session-id');
-
-async function createChatSession(sessionId, sessionType, participants) {
-    try {
-        if (!sessionId) {
-            sessionId = uuidv4();
+        await initDB();
+        
+        // 创建操作
+        let userId = 1;
+        
+        // 读取操作
+        let user = await crudOperation('Users', 'read', null, userId);
+        
+        if (!user) {
+            
+            userId = await crudOperation('Users', 'create', {
+                username: 'john_doe',
+                displayName: 'John Doe',
+                email: 'john@example.com',
+                password: 'hashed_password',
+                avatarUrl: '',
+                status: 'online',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        
+            console.log('User created with ID:', userId);
+                
+            
         }
-        let session = {
-            sessionId: sessionId,
-            sessionType: sessionType,
-            participants: participants,
+        
+        user = await crudOperation('Users', 'read', null, userId);
+        
+        
+        console.log('User retrieved:', user);
+        
+            $log.textContent = JSON.stringify(user);
+       
+/*
+        // 更新操作
+        await crudOperation('Users', 'update', {
+            userId: userId,
+            username: 'john_doe',
+            displayName: 'Johnathan Doe',
+            email: 'john@example.com',
+            password: 'hashed_password',
+            avatarUrl: '',
+            status: 'busy',
             createdAt: new Date(),
             updatedAt: new Date()
-        };
-        await crudOperation('ChatSessions', 'create', session);
-        console.log('Chat session created with ID:', sessionId);
-        //alert('sessionId1');
-        //alert(sessionId);
-        return sessionId;
+        });
+        console.log('User updated');
+*/
+        // 删除操作
+        //await crudOperation('Users', 'delete', null, userId);
+        //console.log('User deleted');
     } catch (error) {
-        console.error('Error during chat session creation:', error);
+        console.error('Error during example usage:', error);
     }
 }
 
-async function createMessage(sessionId, senderId, receiverId, content, contentType) {
-    try {
-        let messageId = uuidv4();
-        let message = {
-            messageId: messageId,
-            sessionId: sessionId,
-            senderId: senderId,
-            receiverId: receiverId,
-            // 如果是群聊，这个字段可以为 null
-            content: content,
-            contentType: contentType,
-            timestamp: new Date(),
-            status: 'sent'
-        };
-        await crudOperation('Messages', 'create', message);
-        console.log('Message created with ID:', messageId);
-        return messageId;
-    } catch (error) {
-        console.error('Error during message creation:', error);
-    }
-}
+initDB();
 
-async function a() {
-    // 调用示例函数
-    //alert(2);
-    let userId1 = uuidv4();
-    let userId2 = uuidv4();
-    let sessionId = await createChatSession(null, 'single', [userId1, userId2]);
-    //alert('sessionId0');
-    //alert(sessionId);
-    await createMessage(sessionId, userId1, userId2, 'Hello, how are you?', 'text');
-}
-
-//a();
+// 调用示例函数
+//exampleUsage();

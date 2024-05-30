@@ -28,6 +28,9 @@ class SnapdropServer {
     }
 
     _onConnection(peer) {
+        console.log('_onConnection');
+        console.log('peer');
+        console.log(peer);
         this._joinRoom(peer);
         peer.socket.on('message', message => this._onMessage(peer, message));
         peer.socket.on('error', console.error);
@@ -37,19 +40,50 @@ class SnapdropServer {
         this._send(peer, {
             type: 'display-name',
             message: {
+                peerId: peer.id,
                 displayName: peer.name.displayName,
                 deviceName: peer.name.deviceName
             }
         });
     }
 
-    _onHeaders(headers, response) {
+    _onHeaders1(headers, response) {
+        console.log('_onHeaders');
         if (response.headers.cookie && response.headers.cookie.indexOf('peerid=') > -1) return;
         response.peerId = Peer.uuid();
+        console.log(response.peerId);
+        headers.push('Set-Cookie: peerid=' + response.peerId + "; SameSite=Strict; Secure");
+    }
+
+    _onHeaders(headers, response) {
+        console.log('_onHeaders');
+        console.log('response');
+        // console.log(request);
+        // Example: Parsing URL parameters
+        const url = new URL(response.url, `http://${response.headers.host}`);
+        const params = new URLSearchParams(url.search);
+
+        response.peerId = null;
+
+        for (const [key, value] of params.entries()) {
+            console.log(`${key}: ${value}`);
+            if (key == 'peerid') {
+                response.peerId = value;
+            }
+        }
+
+        if (response.peerId) {
+            
+        } else {
+            response.peerId = Peer.uuid();
+        }
+
+        console.log(response.peerId);
         headers.push('Set-Cookie: peerid=' + response.peerId + "; SameSite=Strict; Secure");
     }
 
     _onMessage(sender, message) {
+        console.log('_onMessage');
         // Try to parse message 
         try {
             message = JSON.parse(message);
@@ -163,6 +197,9 @@ class SnapdropServer {
 class Peer {
 
     constructor(socket, request) {
+        console.log('request');
+        console.log(request.peerId);
+        
         // set socket
         this.socket = socket;
 
@@ -194,6 +231,10 @@ class Peer {
     }
 
     _setPeerId(request) {
+
+        console.log('_setPeerId');
+        console.log(request.peerId);
+
         if (request.peerId) {
             this.id = request.peerId;
         } else {

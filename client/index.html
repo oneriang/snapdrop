@@ -62,18 +62,52 @@
     <!-- Peers -->
     <x-peers class="center"></x-peers>
     <x-no-peers>
-        <h2>Open Snapdrop on other devices to send files</h2>
+        <!-- <h2>Open Snapdrop on other devices to send files</h2> -->
     </x-no-peers>
     <x-instructions desktop="Click to send files or right click to send a message" mobile="Tap to send files or long tap to send a message"></x-instructions>
     
     <!-- Footer -->
     <footer class="column">
+        <div id="log"></div>
         <svg class="icon logo">
             <use xlink:href="#wifi-tethering" />
         </svg>
         <div id="displayName" placeholder="The easiest way to transfer data across devices"></div>
         <div class="font-body2">You can be discovered by everyone on this network</div>
     </footer>
+
+    <x-dialogs class="center"></x-dialogs>
+    <!-- Chat Dialog -->
+    <x-dialog id="chatDialog">
+        <x-background class="full center">
+            <x-paper shadow="2">
+                <h1 id="senderId">xxx</h1>
+                <div id="chatList">
+                    <!-- <div class="textarea">
+                        <p>Hello. How are you today?</p>
+                        <span class="time-left">11:00</span>
+                      </div>
+                      
+                      <div class="textarea darker">
+                        <p style="text-align: right;">Hey! I'm fine. Thanks for asking!</p>
+                        <span class="time-right">11:01</span>
+                      </div> -->
+                </div>
+
+                <div id="chatTextInput" class="textarea" 
+                    style="background: white;border: solid thin;" 
+                    role="textbox" 
+                    placeholder="Send a message" 
+                    autocomplete="off" 
+                    autofocus contenteditable></div>
+
+                    <div class="row-reverse">
+                        <button class="button" id="chatTextSendButton" >Send</button>
+                        <a class="button" close>Cancel</a>
+                    </div>
+            </x-paper>
+        </x-background>
+    </x-dialog>
     <!-- Receive Dialog -->
     <x-dialog id="receiveDialog">
         <x-background class="full center">
@@ -260,8 +294,13 @@
 </script>
     
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js"></script>
+
     <script src="scripts/network.js"></script>
-    <script src="scripts/ui.js?v=2"></script>
+    <script src="scripts/ui.js?v=3"></script>
+    <!-- <script src="scripts/client.js" async></script> -->
     <script src="scripts/theme.js" async></script>
     <script src="scripts/clipboard.js" async></script>
     <!-- Sounds -->

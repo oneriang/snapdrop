@@ -1,1 +1,1094 @@
 Snapdrop is running on port 9001
+SIGTERM Received, exiting...
+Snapdrop is running on port 9001
+_onHeaders
+response
+peerid: dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+request
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_setPeerId
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 7,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 250,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 8,
+        [Symbol(triggerId)]: 7
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '27.253.251.159',
+  id: 'dc8bc424-86e2-4b77-a53d-ba489ef8bc06',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Brown Cicada'
+  },
+  timerId: 0,
+  lastBeat: 1716953885013
+}
+_onMessage
+_onMessage
+_onHeaders
+response
+peerid: dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+request
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_setPeerId
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 26,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 4917,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 27,
+        [Symbol(triggerId)]: 26
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '27.253.251.159',
+  id: 'dc8bc424-86e2-4b77-a53d-ba489ef8bc06',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Brown Cicada'
+  },
+  timerId: 0,
+  lastBeat: 1716953889666
+}
+_onMessage
+_onHeaders
+response
+peerid: aa86b14f-8559-42b8-9b9c-1aaf3b919679
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+request
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_setPeerId
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 41,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 24228,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 42,
+        [Symbol(triggerId)]: 41
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '106.146.41.107',
+  id: 'aa86b14f-8559-42b8-9b9c-1aaf3b919679',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Rose Slug'
+  },
+  timerId: 0,
+  lastBeat: 1716953908977
+}
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onHeaders
+response
+peerid: dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+request
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_setPeerId
+dc8bc424-86e2-4b77-a53d-ba489ef8bc06
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 260,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 5092235,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 261,
+        [Symbol(triggerId)]: 260
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '27.253.251.199',
+  id: 'dc8bc424-86e2-4b77-a53d-ba489ef8bc06',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Brown Cicada'
+  },
+  timerId: 0,
+  lastBeat: 1716958976983
+}
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onHeaders
+response
+peerid: aa86b14f-8559-42b8-9b9c-1aaf3b919679
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+request
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_setPeerId
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 391,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 8499764,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 392,
+        [Symbol(triggerId)]: 391
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '106.146.41.107',
+  id: 'aa86b14f-8559-42b8-9b9c-1aaf3b919679',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Rose Slug'
+  },
+  timerId: 0,
+  lastBeat: 1716962384512
+}
+_onMessage
+_onHeaders
+response
+peerid: aa86b14f-8559-42b8-9b9c-1aaf3b919679
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+request
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_setPeerId
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 411,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 8525713,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 412,
+        [Symbol(triggerId)]: 411
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '106.146.41.107',
+  id: 'aa86b14f-8559-42b8-9b9c-1aaf3b919679',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Rose Slug'
+  },
+  timerId: 0,
+  lastBeat: 1716962410462
+}
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onHeaders
+response
+peerid: aa86b14f-8559-42b8-9b9c-1aaf3b919679
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+request
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_setPeerId
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 471,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 8551803,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 472,
+        [Symbol(triggerId)]: 471
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '106.146.41.107',
+  id: 'aa86b14f-8559-42b8-9b9c-1aaf3b919679',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Rose Slug'
+  },
+  timerId: 0,
+  lastBeat: 1716962436552
+}
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onMessage
+_onHeaders
+response
+peerid: aa86b14f-8559-42b8-9b9c-1aaf3b919679
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+request
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_setPeerId
+aa86b14f-8559-42b8-9b9c-1aaf3b919679
+_onConnection
+peer
+Peer {
+  socket: WebSocket {
+    _events: [Object: null prototype] { close: [Function] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    _binaryType: 'nodebuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: '',
+    _closeTimer: null,
+    _extensions: {},
+    _protocol: '',
+    _readyState: 1,
+    _receiver: Receiver {
+      _writableState: [WritableState],
+      writable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 6,
+      _maxListeners: undefined,
+      _binaryType: 'nodebuffer',
+      _extensions: {},
+      _isServer: true,
+      _maxPayload: 104857600,
+      _bufferedBytes: 0,
+      _buffers: [],
+      _compressed: false,
+      _payloadLength: 0,
+      _mask: undefined,
+      _fragmented: 0,
+      _masked: false,
+      _fin: false,
+      _opcode: 0,
+      _totalPayloadLength: 0,
+      _messageLength: 0,
+      _fragments: [],
+      _state: 0,
+      _loop: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(websocket)]: [Circular]
+    },
+    _sender: Sender {
+      _extensions: {},
+      _socket: [Socket],
+      _firstFragment: true,
+      _compress: false,
+      _bufferedBytes: 0,
+      _deflating: false,
+      _queue: []
+    },
+    _socket: Socket {
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: null,
+      _readableState: [ReadableState],
+      readable: true,
+      _events: [Object: null prototype],
+      _eventsCount: 5,
+      _maxListeners: undefined,
+      _writableState: [WritableState],
+      writable: true,
+      allowHalfOpen: true,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: [Server],
+      _server: [Server],
+      timeout: 0,
+      parser: null,
+      on: [Function],
+      addListener: [Function],
+      prependListener: [Function: prependListener],
+      _paused: false,
+      [Symbol(asyncId)]: 522,
+      [Symbol(kHandle)]: [TCP],
+      [Symbol(kSetNoDelay)]: true,
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: Timeout {
+        _idleTimeout: -1,
+        _idlePrev: null,
+        _idleNext: null,
+        _idleStart: 8779666,
+        _onTimeout: null,
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: true,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 523,
+        [Symbol(triggerId)]: 522
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(websocket)]: [Circular]
+    },
+    _isServer: true,
+    [Symbol(kCapture)]: false
+  },
+  ip: '106.146.41.107',
+  id: 'aa86b14f-8559-42b8-9b9c-1aaf3b919679',
+  rtcSupported: true,
+  name: {
+    model: 'K',
+    os: 'Android',
+    browser: 'Chrome',
+    type: 'mobile',
+    deviceName: 'Android K',
+    displayName: 'Rose Slug'
+  },
+  timerId: 0,
+  lastBeat: 1716962664414
+}
+_onMessage
+SIGTERM Received, exiting...
